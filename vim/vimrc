@@ -1,0 +1,984 @@
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Basic Vim Configuration with Gruvbox Dark Hard Theme
+" A modified version of:
+"   Amir Salihefendic - @amix3k - https://github.com/amix/vimrc
+" Features:
+"       - Gruvbox Dark Hard color scheme
+"       - Enhanced UI improvements
+"       - Smart defaults for modern development
+"       - Comprehensive key mappings
+"       - Better visual feedback
+"
+" Sections:
+"    -> General Settings
+"    -> VIM User Interface
+"    -> Colors and Fonts (Gruvbox Dark Hard)
+"    -> Files, Backups and Undo
+"    -> Text, Tab and Indent Related
+"    -> Visual Mode Related
+"    -> Moving Around, Tabs and Buffers
+"    -> Status Line
+"    -> Editing Mappings
+"    -> Search and Replace
+"    -> Spell Checking
+"    -> Miscellaneous
+"    -> Helper Functions
+"
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => General Settings
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Sets how many lines of history VIM has to remember
+set history=500
+
+" Enable filetype plugins and indentation
+filetype plugin on
+filetype indent on
+
+" Set to auto read when a file is changed from the outside
+set autoread
+au FocusGained,BufEnter * silent! checktime
+
+" With a map leader it's possible to do extra key combinations
+" like <leader>w saves the current file
+let mapleader = ","
+
+" Ghostty terminal compatibility fixes
+if $TERM_PROGRAM ==# "ghostty" || $TERM ==# "xterm-ghostty"
+    " Force proper terminal type for Ghostty
+    set term=xterm-256color
+    " Ensure proper backspace behavior
+    set t_kb=
+    " Fix delete key
+    set t_kD=[3~
+    " Reduce status line update frequency to prevent display artifacts
+    set updatetime=1000
+    " Disable some visual effects that might cause issues
+    set nocursorline
+    " Use simplified status line to prevent display artifacts
+    let g:use_simple_statusline = 1
+endif
+
+" Fast saving
+nmap <leader>w :w!<cr>
+
+" :W sudo saves the file (useful for handling permission-denied error)
+command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
+
+" Enable mouse support (helpful for beginners and GUI users)
+set mouse=a
+
+" Set clipboard to use system clipboard (requires +clipboard feature)
+if has('clipboard')
+    set clipboard=unnamedplus
+endif
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => VIM User Interface
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Set 7 lines to the cursor - when moving vertically using j/k
+set so=7
+
+" Avoid garbled characters in Chinese language windows OS
+let $LANG='en'
+set langmenu=en
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
+
+" Turn on the Wild menu for better command completion
+set wildmenu
+set wildmode=longest:full,full
+
+" Ignore compiled files and common artifacts
+set wildignore=*.o,*~,*.pyc,*.class,*.exe,*.dll,*.so
+if has("win16") || has("win32")
+    set wildignore+=.git\*,.hg\*,.svn\*
+else
+    set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
+endif
+
+" Always show current position
+set ruler
+
+" Height of the command bar
+set cmdheight=1
+
+" Show line numbers (absolute and relative)
+set number
+set relativenumber
+
+" A buffer becomes hidden when it is abandoned
+set hid
+
+" Configure backspace so it acts as it should act
+set backspace=eol,start,indent
+set whichwrap+=<,>,h,l
+
+" Ignore case when searching
+set ignorecase
+
+" When searching try to be smart about cases
+set smartcase
+
+" Highlight search results
+set hlsearch
+
+" Makes search act like search in modern browsers
+set incsearch
+
+" Don't redraw while executing macros (good performance config)
+set lazyredraw
+
+" For regular expressions turn magic on
+set magic
+
+" Show matching brackets when text indicator is over them
+set showmatch
+
+" How many tenths of a second to blink when matching brackets
+set mat=2
+
+" No annoying sound on errors
+set noerrorbells
+set novisualbell
+set t_vb=
+set tm=500
+
+" Properly disable sound on errors on MacVim
+if has("gui_macvim")
+    autocmd GUIEnter * set vb t_vb=
+endif
+
+" Add a bit extra margin to the left for fold column
+set foldcolumn=1
+
+" Highlight current line for better cursor visibility
+" set cursorline
+
+" Show incomplete commands in the status line
+set showcmd
+
+" Display tabs and trailing spaces visually
+set list
+" Use ASCII characters for Ghostty compatibility, Unicode for others
+if $TERM_PROGRAM ==# "ghostty" || $TERM ==# "xterm-ghostty"
+    set listchars=tab:>-,trail:.,extends:>,precedes:<,nbsp:+
+else
+    set listchars=tab:▸\ ,trail:·,extends:❯,precedes:❮,nbsp:±
+endif
+
+" Better splitting behavior
+set splitbelow
+set splitright
+
+" Keep more context when scrolling
+set scrolloff=3
+set sidescrolloff=5
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Colors and Fonts (Gruvbox Dark Hard)
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Enable syntax highlighting
+syntax enable
+
+" Set regular expression engine automatically
+set regexpengine=0
+
+" Enable 256 colors palette and true color support
+set t_Co=256
+if has('termguicolors')
+    set termguicolors
+endif
+
+" Set background to dark
+set background=dark
+
+" Gruvbox Dark Hard Color Scheme Function
+function! GruvboxColors()
+    highlight clear
+
+    " Background and foreground (Hard contrast)
+    highlight Normal guifg=#ebdbb2 guibg=#1d2021 ctermfg=223 ctermbg=234
+
+    " Syntax highlighting
+    highlight Comment guifg=#928374 gui=italic ctermfg=245
+    highlight Constant guifg=#d3869b ctermfg=175
+    highlight String guifg=#b8bb26 ctermfg=142
+    highlight Character guifg=#b8bb26 ctermfg=142
+    highlight Number guifg=#d3869b ctermfg=175
+    highlight Boolean guifg=#d3869b ctermfg=175
+    highlight Float guifg=#d3869b ctermfg=175
+    highlight Identifier guifg=#83a598 ctermfg=109
+    highlight Function guifg=#b8bb26 gui=bold ctermfg=142
+    highlight Statement guifg=#fb4934 gui=bold ctermfg=167
+    highlight Conditional guifg=#fb4934 gui=bold ctermfg=167
+    highlight Repeat guifg=#fb4934 gui=bold ctermfg=167
+    highlight Label guifg=#fb4934 gui=bold ctermfg=167
+    highlight Operator guifg=#8ec07c ctermfg=108
+    highlight Keyword guifg=#fb4934 gui=bold ctermfg=167
+    highlight Exception guifg=#fb4934 gui=bold ctermfg=167
+    highlight PreProc guifg=#8ec07c ctermfg=108
+    highlight Include guifg=#8ec07c ctermfg=108
+    highlight Define guifg=#8ec07c ctermfg=108
+    highlight Macro guifg=#8ec07c ctermfg=108
+    highlight PreCondit guifg=#8ec07c ctermfg=108
+    highlight Type guifg=#fabd2f gui=bold ctermfg=214
+    highlight StorageClass guifg=#fe8019 ctermfg=208
+    highlight Structure guifg=#8ec07c ctermfg=108
+    highlight Typedef guifg=#fabd2f gui=bold ctermfg=214
+    highlight Special guifg=#fe8019 ctermfg=208
+    highlight SpecialChar guifg=#fe8019 ctermfg=208
+    highlight Tag guifg=#8ec07c ctermfg=108
+    highlight Delimiter guifg=#fe8019 ctermfg=208
+    highlight SpecialComment guifg=#fe8019 ctermfg=208
+    highlight Debug guifg=#fe8019 ctermfg=208
+    highlight Underlined guifg=#83a598 gui=underline ctermfg=109
+    highlight Ignore guifg=#928374 ctermfg=245
+    highlight Error guifg=#fb4934 guibg=#1d2021 gui=bold ctermfg=167 ctermbg=234
+    highlight Todo guifg=#1d2021 guibg=#fabd2f gui=bold ctermfg=234 ctermbg=214
+
+    " UI elements
+    highlight LineNr guifg=#7c6f64 guibg=#1d2021 ctermfg=243 ctermbg=234
+    highlight CursorLineNr guifg=#fabd2f guibg=#3c3836 gui=bold ctermfg=214 ctermbg=237
+    highlight CursorLine guibg=#3c3836 ctermbg=237
+    highlight CursorColumn guibg=#3c3836 ctermbg=237
+    highlight ColorColumn guibg=#3c3836 ctermbg=237
+    highlight StatusLine guifg=#1d2021 guibg=#d5c4a1 gui=bold ctermfg=234 ctermbg=250
+    highlight StatusLineNC guifg=#a89984 guibg=#504945 ctermfg=246 ctermbg=239
+    highlight VertSplit guifg=#504945 guibg=#1d2021 ctermfg=239 ctermbg=234
+    highlight Visual guibg=#504945 ctermbg=239
+    highlight Search guifg=#1d2021 guibg=#fabd2f ctermfg=234 ctermbg=214
+    highlight IncSearch guifg=#1d2021 guibg=#fe8019 ctermfg=234 ctermbg=208
+    highlight MatchParen guifg=#1d2021 guibg=#83a598 gui=bold ctermfg=234 ctermbg=109
+
+    " Completion menu
+    highlight Pmenu guifg=#ebdbb2 guibg=#504945 ctermfg=223 ctermbg=239
+    highlight PmenuSel guifg=#1d2021 guibg=#83a598 ctermfg=234 ctermbg=109
+    highlight PmenuSbar guibg=#665c54 ctermbg=241
+    highlight PmenuThumb guibg=#a89984 ctermbg=246
+
+    " Tabs
+    highlight TabLine guifg=#a89984 guibg=#3c3836 ctermfg=246 ctermbg=237
+    highlight TabLineFill guifg=#a89984 guibg=#3c3836 ctermfg=246 ctermbg=237
+    highlight TabLineSel guifg=#1d2021 guibg=#d5c4a1 gui=bold ctermfg=234 ctermbg=250
+
+    " Diff colors
+    highlight DiffAdd guifg=#b8bb26 guibg=#1d2021 ctermfg=142 ctermbg=234
+    highlight DiffChange guifg=#8ec07c guibg=#1d2021 ctermfg=108 ctermbg=234
+    highlight DiffDelete guifg=#fb4934 guibg=#1d2021 ctermfg=167 ctermbg=234
+    highlight DiffText guifg=#fabd2f guibg=#1d2021 gui=bold ctermfg=214 ctermbg=234
+
+    " Spell checking
+    highlight SpellBad guifg=#fb4934 gui=undercurl ctermfg=167 cterm=underline
+    highlight SpellCap guifg=#83a598 gui=undercurl ctermfg=109 cterm=underline
+    highlight SpellLocal guifg=#8ec07c gui=undercurl ctermfg=108 cterm=underline
+    highlight SpellRare guifg=#d3869b gui=undercurl ctermfg=175 cterm=underline
+
+    " Folding
+    highlight Folded guifg=#928374 guibg=#3c3836 ctermfg=245 ctermbg=237
+    highlight FoldColumn guifg=#928374 guibg=#1d2021 ctermfg=245 ctermbg=234
+
+    " Sign column
+    highlight SignColumn guifg=#928374 guibg=#1d2021 ctermfg=245 ctermbg=234
+
+    " Special characters
+    highlight NonText guifg=#665c54 ctermfg=241
+    highlight SpecialKey guifg=#665c54 ctermfg=241
+
+    " Messages
+    highlight ModeMsg guifg=#fabd2f gui=bold ctermfg=214
+    highlight MoreMsg guifg=#b8bb26 gui=bold ctermfg=142
+    highlight WarningMsg guifg=#fe8019 gui=bold ctermfg=208
+    highlight ErrorMsg guifg=#fb4934 gui=bold ctermfg=167
+
+    " Question prompts
+    highlight Question guifg=#8ec07c gui=bold ctermfg=108
+
+    " Directory listings
+    highlight Directory guifg=#83a598 gui=bold ctermfg=109
+
+    " Title
+    highlight Title guifg=#b8bb26 gui=bold ctermfg=142
+endfunction
+
+" Apply the Gruvbox color scheme
+call GruvboxColors()
+
+" Auto-apply colors when colorscheme is reset
+autocmd ColorScheme * call GruvboxColors()
+
+" Set utf8 as standard encoding and en_US as the standard language
+set encoding=utf8
+
+" Use Unix as the standard file type
+set ffs=unix,dos,mac
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Files, Backups and Undo
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Turn backup off, since most stuff is in SVN, git etc. anyway...
+set nobackup
+set nowb
+set noswapfile
+
+" Enable persistent undo (requires Vim 7.3+)
+if has('persistent_undo')
+    set undofile
+    set undodir=~/.vim/undodir
+    " Create undo directory if it doesn't exist
+    if !isdirectory(&undodir)
+        call mkdir(&undodir, 'p')
+    endif
+endif
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Text, Tab and Indent Related
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Use spaces instead of tabs
+set expandtab
+
+" Be smart when using tabs ;)
+set smarttab
+
+" 1 tab == 4 spaces (adjust based on your preference)
+set shiftwidth=4
+set tabstop=4
+set softtabstop=4
+
+" Linebreak on 500 characters
+set lbr
+set tw=500
+
+set ai "Auto indent
+set si "Smart indent
+set wrap "Wrap lines
+
+" Show indentation guides
+set autoindent
+set smartindent
+
+" Better handling of long lines
+set linebreak
+" Set showbreak character based on terminal compatibility
+if $TERM_PROGRAM ==# "ghostty" || $TERM ==# "xterm-ghostty"
+    set showbreak=>>\ 
+else
+    set showbreak=↪\ 
+endif
+
+
+""""""""""""""""""""""""""""""
+" => Visual Mode Related
+""""""""""""""""""""""""""""""
+" Visual mode pressing * or # searches for the current selection
+" Super useful! From an idea by Michael Naumann
+vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
+vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Moving Around, Tabs, Windows and Buffers
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
+map <space> /
+map <C-space> ?
+
+" Disable highlight when <leader><cr> is pressed
+map <silent> <leader><cr> :noh<cr>
+
+" Smart way to move between windows
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+map <C-h> <C-W>h
+map <C-l> <C-W>l
+
+" Close the current buffer
+map <leader>bd :Bclose<cr>:tabclose<cr>gT
+
+" Close all the buffers
+map <leader>ba :bufdo bd<cr>
+
+" Navigate between buffers
+map <leader>l :bnext<cr>
+map <leader>h :bprevious<cr>
+
+" Useful mappings for managing tabs
+map <leader>tn :tabnew<cr>
+map <leader>to :tabonly<cr>
+map <leader>tc :tabclose<cr>
+map <leader>tm :tabmove
+map <leader>t<leader> :tabnext<cr>
+
+" Let 'tl' toggle between this and the last accessed tab
+let g:lasttab = 1
+nmap <leader>tl :exe "tabn ".g:lasttab<CR>
+au TabLeave * let g:lasttab = tabpagenr()
+
+" Opens a new tab with the current buffer's path
+" Super useful when editing files in the same directory
+map <leader>te :tabedit <C-r>=escape(expand("%:p:h"), " ")<cr>/
+
+" Switch CWD to the directory of the open buffer
+map <leader>cd :cd %:p:h<cr>:pwd<cr>
+
+" Specify the behavior when switching between buffers
+try
+  set switchbuf=useopen,usetab,newtab
+  set stal=2
+catch
+endtry
+
+" Return to last edit position when opening files (You want this!)
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+
+" Move to beginning/end of line
+nnoremap B ^
+nnoremap E $
+
+" Make j and k move by visual line, not actual line, when text is wrapped
+nnoremap j gj
+nnoremap k gk
+
+
+""""""""""""""""""""""""""""""
+" => Status Line
+""""""""""""""""""""""""""""""
+" Always show the status line
+set laststatus=2
+
+" Format the status line with more information
+set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l/%L\ \ Column:\ %c\ \ %p%%
+
+" Enhanced status line function with Gruvbox styling
+function! GetStatusLine()
+    let l:statusline = ""
+
+    " Mode display with different colors
+    let l:mode = mode()
+    if l:mode ==# "n"
+        let l:statusline .= "%#StatusLineMode#  NORMAL  %*"
+    elseif l:mode ==# "i"
+        let l:statusline .= "%#StatusLineModeInsert#  INSERT  %*"
+    elseif l:mode ==# "v" || l:mode ==# "V" || l:mode ==# "\<C-v>"
+        let l:statusline .= "%#StatusLineModeVisual#  VISUAL  %*"
+    elseif l:mode ==# "R"
+        let l:statusline .= "%#StatusLineModeReplace#  REPLACE  %*"
+    elseif l:mode ==# "c"
+        let l:statusline .= "%#StatusLineModeCommand#  COMMAND  %*"
+    else
+        let l:statusline .= "%#StatusLineMode#  " . toupper(l:mode) . "  %*"
+    endif
+
+    " Git branch if available
+    let l:git_branch = ""
+    if exists('*FugitiveHead')
+        let l:git_branch = FugitiveHead()
+    elseif executable('git') && filereadable(expand('%:p'))
+        let l:git_cmd = "git -C " . shellescape(expand('%:p:h')) . " rev-parse --abbrev-ref HEAD 2>/dev/null"
+        let l:git_branch = system(l:git_cmd)
+        let l:git_branch = substitute(l:git_branch, '\n', '', 'g')
+    endif
+
+    if l:git_branch != ""
+        let l:statusline .= "%#StatusLineGit#  " . l:git_branch . " %*"
+    endif
+
+    " Filename and modification flags
+    let l:statusline .= "%#StatusLinePath# %<%F %*"
+    let l:statusline .= "%#StatusLineFlags#%m%r%h%w%*"
+
+    " Separator
+    let l:statusline .= "%="
+
+    " File type, format and encoding
+    let l:statusline .= "%#StatusLineFileInfo# %{&fileformat} | %{&fileencoding?&fileencoding:&encoding} | %Y %*"
+
+    " Line, column and percentage
+    let l:statusline .= "%#StatusLinePosition#  Ln %l:%c  %p%% %*"
+
+    return l:statusline
+endfunction
+
+" Define status line highlight groups with Gruvbox colors
+function! SetupStatusLineHighlights()
+    " Normal mode - Green
+    hi StatusLineMode guifg=#1d2021 guibg=#b8bb26 gui=bold ctermfg=234 ctermbg=142
+    " Insert mode - Blue
+    hi StatusLineModeInsert guifg=#1d2021 guibg=#83a598 gui=bold ctermfg=234 ctermbg=109
+    " Visual mode - Orange
+    hi StatusLineModeVisual guifg=#1d2021 guibg=#fe8019 gui=bold ctermfg=234 ctermbg=208
+    " Replace mode - Red
+    hi StatusLineModeReplace guifg=#1d2021 guibg=#fb4934 gui=bold ctermfg=234 ctermbg=167
+    " Command mode - Purple
+    hi StatusLineModeCommand guifg=#1d2021 guibg=#d3869b gui=bold ctermfg=234 ctermbg=175
+
+    " Git branch
+    hi StatusLineGit guifg=#fabd2f guibg=#3c3836 gui=italic ctermfg=214 ctermbg=237
+    " File path
+    hi StatusLinePath guifg=#ebdbb2 guibg=NONE ctermfg=223
+    " Flags (modified, readonly, etc)
+    hi StatusLineFlags guifg=#fb4934 guibg=NONE gui=bold ctermfg=167
+    " File info
+    hi StatusLineFileInfo guifg=#a89984 guibg=NONE gui=italic ctermfg=246
+    " Position info
+    hi StatusLinePosition guifg=#83a598 guibg=NONE gui=bold ctermfg=109
+endfunction
+
+" Create an autocmd group for our status line
+augroup CustomStatusLine
+    autocmd!
+    autocmd VimEnter,ColorScheme * call SetupStatusLineHighlights()
+    " Only set up complex status line updates if not using simple status line
+    if !exists('g:use_simple_statusline') || !g:use_simple_statusline
+        " Update status line when the mode changes
+        if exists('##ModeChanged')
+            autocmd ModeChanged * let &l:statusline = '%!GetStatusLine()'
+        else
+            " For older Vim versions that don't have ModeChanged event
+            for mode in ['n', 'i', 'R', 'v', 'V', "\<C-v>", 'c', 't']
+                execute 'autocmd' mode.'Enter' '* let &l:statusline = "%!GetStatusLine()"'
+            endfor
+        endif
+        autocmd BufEnter,WinEnter,BufWritePost * let &l:statusline = '%!GetStatusLine()'
+    endif
+augroup END
+
+" Apply the status line immediately
+call SetupStatusLineHighlights()
+
+" Use simple status line for Ghostty compatibility
+if exists('g:use_simple_statusline') && g:use_simple_statusline
+    " Simple, reliable status line for Ghostty
+    set statusline=%<%F\ %h%m%r%=%-14.(%l,%c%V%)\ %P
+else
+    let &l:statusline = '%!GetStatusLine()'
+endif
+
+" Force update on sourcing vimrc
+if exists(':redrawstatus')
+    redrawstatus
+endif
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Editing Mappings
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Remap VIM 0 to first non-blank character
+map 0 ^
+
+" Move a line of text using ALT+[jk] or Command+[jk] on mac
+nmap <M-j> mz:m+<cr>`z
+nmap <M-k> mz:m-2<cr>`z
+vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
+vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
+
+if has("mac") || has("macunix")
+  nmap <D-j> <M-j>
+  nmap <D-k> <M-k>
+  vmap <D-j> <M-j>
+  vmap <D-k> <M-k>
+endif
+
+" Delete trailing white space on save, useful for some filetypes ;)
+fun! CleanExtraSpaces()
+    let save_cursor = getpos(".")
+    let old_query = getreg('/')
+    silent! %s/\s\+$//e
+    call setpos('.', save_cursor)
+    call setreg('/', old_query)
+endfun
+
+if has("autocmd")
+    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee,*.vim,*.html,*.css,*.json,*.yaml,*.yml :call CleanExtraSpaces()
+endif
+
+" Toggle line numbers (relative and absolute)
+nnoremap <leader>n :set number!<cr>
+nnoremap <leader>rn :set relativenumber!<cr>
+
+" Quick pairs
+inoremap ( ()<Esc>i
+inoremap [ []<Esc>i
+inoremap { {}<Esc>i
+inoremap " ""<Esc>i
+inoremap ' ''<Esc>i
+
+" Easier increment/decrement
+nnoremap + <C-a>
+nnoremap - <C-x>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Search and Replace
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Use ripgrep or ag for searching if available
+if executable('rg')
+    set grepprg=rg\ --no-heading\ --vimgrep
+    set grepformat=%f:%l:%c:%m
+elseif executable('ag')
+    set grepprg=ag\ --nogroup\ --nocolor
+endif
+
+" Search for selected text in visual mode
+vnoremap <silent> <leader>f :<C-u>call VisualSelection('', '')<CR>:grep! <C-R>=@/<CR><CR>:copen<CR>
+
+" Replace selected text in visual mode
+vnoremap <silent> <leader>r :<C-u>call VisualSelection('replace', '')<CR>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Spell Checking
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Pressing ,ss will toggle and untoggle spell checking
+map <leader>ss :setlocal spell!<cr>
+
+" Shortcuts using <leader>
+map <leader>sn ]s
+map <leader>sp [s
+map <leader>sa zg
+map <leader>s? z=
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Miscellaneous
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Remove the Windows ^M - when the encodings gets messed up
+noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
+
+" Quickly open a buffer for scribble
+map <leader>b :e ~/buffer<cr>
+
+" Quickly open a markdown buffer for scribble
+map <leader>x :e ~/buffer.md<cr>
+
+" Toggle paste mode on and off
+map <leader>pp :setlocal paste!<cr>
+
+" Source vimrc quickly
+nnoremap <leader>sv :source $MYVIMRC<cr>
+
+" Edit vimrc quickly
+nnoremap <leader>ev :edit $MYVIMRC<cr>
+
+" Clear search highlighting
+nnoremap <silent> <Esc><Esc> :nohlsearch<cr>
+
+" Save with Ctrl+S (works in insert and normal mode)
+nnoremap <C-s> :w<cr>
+inoremap <C-s> <Esc>:w<cr>a
+
+" Quit Vim with leader+q (simple quit) and leader+Q (force quit all)
+nnoremap <leader>q :q<cr>
+nnoremap <leader>Q :qa!<cr>
+
+" Show whitespace characters toggle
+nnoremap <leader>ws :set list!<cr>
+
+" Toggle fold
+nnoremap <leader>z za
+
+" Open file under cursor in new tab
+nnoremap gf <C-w>gf
+
+" Duplicate current line
+nnoremap <leader>d :copy .<cr>
+
+" Change directory to current file's directory
+nnoremap <leader>. :cd %:p:h<cr>
+
+" Quick file finder (like Telescope)
+function! QuickFind()
+    let l:finder = ""
+    if executable('fzf')
+        let l:finder = "fzf"
+    elseif executable('find') && executable('grep')
+        let l:finder = "find_grep"
+    endif
+
+    if l:finder == "fzf"
+        " Use FZF via system command
+        let temp_file = tempname()
+        let fzf_command = 'find . -type f -not -path "*/\.git/*" | fzf > ' . shellescape(temp_file)
+        execute 'silent !clear && ' . fzf_command
+        redraw!
+
+        if filereadable(temp_file)
+            let selected_file = readfile(temp_file)[0]
+            if !empty(selected_file)
+                execute 'edit ' . fnameescape(selected_file)
+            endif
+            call delete(temp_file)
+        endif
+    elseif l:finder == "find_grep"
+        " Fallback to find with a prompt
+        let l:search = input("Find files containing: ")
+        if !empty(l:search)
+            let l:command = "find . -type f -not -path '*/\\.git/*' | grep -i '" . l:search . "'"
+            let l:files = systemlist(l:command)
+            if len(l:files) == 1
+                execute "edit " . l:files[0]
+            elseif len(l:files) > 1
+                let l:options = ["Select a file:"]
+                let l:index = 1
+                for file in l:files
+                    call add(l:options, l:index . ". " . file)
+                    let l:index = l:index + 1
+                endfor
+                let l:choice = inputlist(l:options)
+                if l:choice > 0 && l:choice <= len(l:files)
+                    execute "edit " . l:files[l:choice-1]
+                endif
+            else
+                echo "No files found matching '" . l:search . "'"
+            endif
+        endif
+    else
+        " Basic file browser with wildmenu
+        call feedkeys(":find **/")
+    endif
+endfunction
+
+" Map leader+ff to quick find function
+nnoremap <leader>ff :call QuickFind()<CR>
+
+" Enhanced find files command using wildcards
+set path+=**
+set wildmenu
+set wildmode=list:longest,full
+
+" Custom file browser
+let g:netrw_banner=0        " disable annoying banner
+let g:netrw_browse_split=0  " open in same window
+let g:netrw_altv=1          " open splits to the right
+let g:netrw_liststyle=3     " tree view
+let g:netrw_list_hide=netrw_gitignore#Hide()
+let g:netrw_list_hide.=',\(^\|\s\s\)\zs\.\S\+' " hide dotfiles
+" Toggle file explorer with leader+fe
+nnoremap <leader>fe :Lexplore 20<CR>
+
+" Enhanced Netrw (like NeoTree)
+function! EnhanceNetrw()
+    " Only apply these settings to netrw buffers
+    if &filetype == 'netrw'
+        " Make it look nicer
+        setlocal cursorline
+        setlocal nonumber
+        setlocal norelativenumber
+
+        " Add custom icons - modify this with utf-8 icons you prefer
+        let g:netrw_sizestyle= "H"
+
+        " Colors to make it look nicer
+        hi Directory guifg=#83a598 gui=bold ctermfg=109
+        hi netrwDir guifg=#83a598 gui=bold ctermfg=109
+        hi netrwClassify guifg=#fabd2f gui=bold ctermfg=214
+        hi netrwTreeBar guifg=#504945 guibg=NONE gui=NONE ctermfg=239 ctermbg=NONE
+        hi netrwExe guifg=#fb4934 ctermfg=167
+        hi netrwSymLink guifg=#d3869b gui=italic ctermfg=175
+
+        " Set width when opening with :Lexplore
+        let g:netrw_winsize = 20
+
+        " Custom mappings within netrw
+        nmap <buffer> h -
+        nmap <buffer> l <CR>
+        nmap <buffer> . gh
+        nmap <buffer> P <C-w>z
+        nmap <buffer> L <CR>:Lexplore<CR>
+        nmap <buffer> <C-l> <CR>:Lexplore<CR>
+        nmap <buffer> <Leader>ff :call QuickFind()<CR>
+
+        " Create file or directory
+        nmap <buffer> af :!touch <C-R>=shellescape(getcwd() . '/')<CR>
+        nmap <buffer> ad :!mkdir <C-R>=shellescape(getcwd() . '/')<CR>
+
+        " Delete file (with confirmation)
+        nmap <buffer> D :let delete_file = expand('%:p') . netrw#GetWord()<CR>:exec '!rm -i ' . delete_file<CR>:echo<CR>
+
+        " Rename file
+        nmap <buffer> R :!mv <C-R>=shellescape(getcwd() . '/' . expand("<cfile>"))<CR> <C-R>=shellescape(getcwd() . '/')<CR>
+
+        " Fix 1: Set the window title to current directory instead of NetrwTreeListing
+        let current_dir = fnamemodify(b:netrw_curdir, ':t')
+        if current_dir == ''
+            let current_dir = fnamemodify(b:netrw_curdir, ':p:h:t')
+        endif
+        execute 'file ' . escape(current_dir, ' ')
+
+        " Fix 2: Customize the netrw status line
+        setlocal statusline=
+        setlocal statusline+=%#StatusLineMode#\ EXPLORER\ %*
+        setlocal statusline+=\ %#StatusLinePath#%{fnamemodify(b:netrw_curdir,':~')}%*
+        setlocal statusline+=%=
+        setlocal statusline+=%#StatusLineFileInfo#\ %{winnr()}\ of\ %{winnr('$')}\ windows%*
+    endif
+endfunction
+
+" Apply enhancements whenever entering a netrw buffer
+augroup NetrwCustom
+    autocmd!
+    autocmd FileType netrw call EnhanceNetrw()
+    " Close if netrw is the only buffer left
+    autocmd BufEnter * if (winnr("$") == 1 && &filetype == "netrw") | q | endif
+    " Keep the current directory and netrw in sync
+    autocmd BufEnter * if &filetype == '' | lcd %:p:h | endif
+    " Fix the window title after netrw operations
+    autocmd BufWritePost,DirChanged * if &filetype == 'netrw' | call EnhanceNetrw() | endif
+augroup END
+
+" Custom mappings for opening Netrw
+nnoremap <leader>fe :Lexplore 20<CR>
+nnoremap <C-n> :Lexplore 20<CR>
+
+" Prevent netrw buffers from being saved in buffer list
+autocmd FileType netrw setlocal bufhidden=wipe
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Helper Functions
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Returns true if paste mode is enabled
+function! HasPaste()
+    if &paste
+        return 'PASTE MODE  '
+    endif
+    return ''
+endfunction
+
+" Don't close window, when deleting a buffer
+command! Bclose call <SID>BufcloseCloseIt()
+function! <SID>BufcloseCloseIt()
+    let l:currentBufNum = bufnr("%")
+    let l:alternateBufNum = bufnr("#")
+
+    if buflisted(l:alternateBufNum)
+        buffer #
+    else
+        bnext
+    endif
+
+    if bufnr("%") == l:currentBufNum
+        new
+    endif
+
+    if buflisted(l:currentBufNum)
+        execute("bdelete! ".l:currentBufNum)
+    endif
+endfunction
+
+function! CmdLine(str)
+    call feedkeys(":" . a:str)
+endfunction
+
+function! VisualSelection(direction, extra_filter) range
+    let l:saved_reg = @"
+    execute "normal! vgvy"
+
+    let l:pattern = escape(@", "\\/.*'$^~[]")
+    let l:pattern = substitute(l:pattern, "\n$", "", "")
+
+    if a:direction == 'gv'
+        call CmdLine("grep! '" . l:pattern . "' " )
+    elseif a:direction == 'replace'
+        call CmdLine("%s" . '/'. l:pattern . '/')
+    endif
+
+    let @/ = l:pattern
+    let @" = l:saved_reg
+endfunction
+
+" Function to show syntax highlighting groups under cursor (useful for theme development)
+function! SynStack()
+  if !exists("*synstack")
+    return
+  endif
+  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
+nnoremap <leader>syn :call SynStack()<cr>
+
+" Toggle between number and relativenumber
+function! NumberToggle()
+  if(&relativenumber == 1)
+    set norelativenumber
+    set number
+  else
+    set relativenumber
+  endif
+endfunc
+nnoremap <leader>nt :call NumberToggle()<cr>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => File Type Specific Settings
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Golang specific settings
+autocmd FileType go setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
+
+" Rust specific settings
+autocmd FileType rust setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
+
+" Java specific settings
+autocmd FileType java setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
+
+" C specific settings
+autocmd FileType c setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
+
+" C++ specific settings
+autocmd FileType cpp setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
+
+" Python specific settings
+autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
+
+" JavaScript/TypeScript specific settings
+autocmd FileType javascript,typescript setlocal expandtab shiftwidth=2 tabstop=2 softtabstop=2
+
+" HTML/CSS specific settings
+autocmd FileType html,css,scss,sass setlocal expandtab shiftwidth=2 tabstop=2 softtabstop=2
+
+" YAML specific settings
+autocmd FileType yaml setlocal expandtab shiftwidth=2 tabstop=2 softtabstop=2
+
+" Markdown specific settings
+autocmd FileType markdown setlocal wrap linebreak textwidth=80
+
+" Git commit messages
+autocmd FileType gitcommit setlocal textwidth=72
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Performance Optimizations
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Faster rendering
+set ttyfast
+
+" Don't update screen during macro and script execution
+set lazyredraw
+
+" Time out on key codes but not mappings
+set notimeout
+set ttimeout
+set ttimeoutlen=10
+
+" Optimize for fast terminal connections
+set ttyfast
+
+" Reduce updatetime for better user experience (default is 4000ms)
+set updatetime=300
+
+" Shorter message length
+set shortmess+=c
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Final Customizations
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Local customizations (create ~/.vimrc.local for machine-specific settings)
+if filereadable(expand("~/.vimrc.local"))
+    source ~/.vimrc.local
+endif

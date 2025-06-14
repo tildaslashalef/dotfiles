@@ -1,0 +1,128 @@
+[user]
+    name = Ahmed ElSebaei
+    email = tildaslashalef@gmail.com
+    signingkey = 00427E661AE052BF01202B22F55949686A946DDD
+
+[include]
+    path = ~/.themes.gitconfig
+
+[core]
+    editor = nvim
+    excludesfile = ~/.gitignore
+    autocrlf = input
+    whitespace = trailing-space,space-before-tab
+    pager = delta
+
+[init]
+    defaultBranch = main
+
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true
+
+[pull]
+    rebase = true
+
+[push]
+    default = current
+    autoSetupRemote = true
+
+[merge]
+    conflictstyle = zdiff3
+    tool = nvimdiff
+
+[diff]
+    colorMoved = default
+
+[color]
+    ui = auto
+    diff = auto
+    status = auto
+    branch = auto
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    features = gruvmax-fang
+    navigate = true  # use n and N to move between diff sections
+    dark = true      # or light = true, or omit for auto-detection
+    side-by-side = true
+    line-numbers = true
+    
+[alias]
+    # Shorthands
+    st = "!git status -sb"
+    co = "!f() { git checkout \"$1\" 2>/dev/null || git checkout -b \"$1\"; }; f"
+    ci = commit
+    br = branch
+    d = diff
+    ds = diff --staged
+
+    # Better log
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
+    # List branches sorted by last modified
+    lb = !git branch --sort=-committerdate
+
+    # Show the last 10 commits
+    last = !git lg -10
+
+    # Show changes in a file
+    changes = log -p --follow --
+
+    # Amend the currently staged files to the latest commit
+    amend = commit --amend --reuse-message=HEAD
+
+    # Remove branches that have been merged with main
+    cleanup = "!git branch --merged | grep -v '\\*\\|main\\|master' | xargs -n 1 git branch -d"
+
+    # Interactive rebase with the given number of latest commits
+    reb = "!r() { git rebase -i HEAD~$1; }; r"
+
+    # Find commits by source code
+    find = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
+
+    # Find branches containing commit
+    fb = "!f() { git branch -a --contains $1; }; f"
+
+    # Show verbose output about tags, branches or remotes
+    tags = tag -l
+    remotes = remote -v
+
+    # Switch to a branch, creating it if necessary
+    sw = "!f() { git switch \"$1\" 2>/dev/null || git switch -c \"$1\"; }; f"
+
+    # Delete a branch on origin
+    shoot = push origin --delete
+
+    # Stash operations
+    stash-all = stash save --include-untracked
+    stash-list = stash list
+    
+    # Unstage staged changes
+    unstage = reset HEAD --
+
+    # Pull and push current branch
+    gpull = !git pull origin $(git symbolic-ref --short HEAD)
+    gpush = !git push origin $(git symbolic-ref --short HEAD)
+
+    # Force push with current branch
+    fpush = "!f() { b=$(git symbolic-ref --short HEAD); git push --force origin \"$b\" || echo \"Failed to push branch $b\"; }; f"
+
+[fetch]
+    prune = true
+
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true 
+
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+[url "git@gitlab.com:"]
+	insteadOf = https://gitlab.com/
+[url "git@bitbucket.org:"]
+	insteadOf = https://bitbucket.org/
