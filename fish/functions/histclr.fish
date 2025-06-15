@@ -1,4 +1,4 @@
-function histclean --description "Clear fish history in all sessions"
+function histclr --description "Clear fish history in all sessions"
     echo "Clearing fish command history in all sessions..."
     
     # Path to fish history file

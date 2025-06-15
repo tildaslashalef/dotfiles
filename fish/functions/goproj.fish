@@ -61,7 +61,7 @@ function goproj -d "Create a comprehensive Golang project template"
     # Create initial directories and files
     switch $project_type
         case "standard"
-            mkdir -p api configs build scripts
+            mkdir -p api configs scripts
             mkdir -p internal/{app,config,models,repository,service}
         case "library"
             mkdir -p examples
@@ -132,8 +132,8 @@ func main() {
     # Create a comprehensive Makefile inspired by the example
     echo "# Project metadata
 BINARY_NAME  := $project
-AUTHOR       := \$(shell git config user.name)
-EMAIL        := \$(shell git config user.email)
+AUTHOR       := \\\$(shell git config user.name)
+EMAIL        := \\\$(shell git config user.email)
 
 # Directory structure
 BUILD_DIR    := bin
@@ -144,19 +144,19 @@ DOCS_DIR     := docs
 # Go toolchain
 GO           := go
 GOFMT        := gofmt
-GOBUILD      := \$(GO) build
-GOTEST       := \$(GO) test
-GOVET        := \$(GO) vet
-GOGET        := \$(GO) get
-GOMOD        := \$(GO) mod
+GOBUILD      := \\\$(GO) build
+GOTEST       := \\\$(GO) test
+GOVET        := \\\$(GO) vet
+GOGET        := \\\$(GO) get
+GOMOD        := \\\$(GO) mod
 
 # Version control
-VERSION      ?= \$(shell git describe --tags --abbrev=0 2>/dev/null || echo \"v0.0.0\")
-BUILD_TIME   := \$(shell date -u '+%Y-%m-%d_%H:%M:%S')
-COMMIT_HASH  := \$(shell git rev-parse HEAD)
+VERSION      ?= \\\$(shell git describe --tags --abbrev=0 2>/dev/null || echo \"v0.0.0\")
+BUILD_TIME   := \\\$(shell date -u '+%Y-%m-%d_%H:%M:%S')
+COMMIT_HASH  := \\\$(shell git rev-parse HEAD)
 
 # Build configuration
-LDFLAGS      := -ldflags=\"-X main.Version=\$(VERSION) -X main.BuildTime=\$(BUILD_TIME) -X main.CommitHash=\$(COMMIT_HASH) -X 'main.Author=\$(AUTHOR)' -X 'main.Email=\$(EMAIL)'\"
+LDFLAGS      := -ldflags=\"-X main.Version=\\\$(VERSION) -X main.BuildTime=\\\$(BUILD_TIME) -X main.CommitHash=\\\$(COMMIT_HASH) -X 'main.Author=\\\$(AUTHOR)' -X 'main.Email=\\\$(EMAIL)'\"
 PLATFORMS    := linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64
 
 .PHONY: all build test bench coverage clean deps lint format help
@@ -165,36 +165,36 @@ PLATFORMS    := linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64
 all: test build ## Run tests and build
 
 build: ## Build the binary for current platform
-	@mkdir -p \$(BUILD_DIR)
-	\$(GOBUILD) \$(LDFLAGS) -o \$(BUILD_DIR)/\$(BINARY_NAME) ./cmd/\$(BINARY_NAME)
-	@echo \"Binary built at \$(BUILD_DIR)/\$(BINARY_NAME)\"
+	@mkdir -p \\\$(BUILD_DIR)
+	\\\$(GOBUILD) \\\$(LDFLAGS) -o \\\$(BUILD_DIR)/\\\$(BINARY_NAME) ./cmd/\\\$(BINARY_NAME)
+	@echo \"Binary built at \\\$(BUILD_DIR)/\\\$(BINARY_NAME)\"
 
 run: build ## Build and run the application
-	./\$(BUILD_DIR)/\$(BINARY_NAME)
+	./\\\$(BUILD_DIR)/\\\$(BINARY_NAME)
 
 # Testing targets
 test: ## Run tests
-	\$(GOTEST) -race -v ./...
+	\\\$(GOTEST) -race -v ./...
 
 coverage: ## Generate test coverage report
-	@mkdir -p \$(COVERAGE_DIR)
-	\$(GOTEST) -race -coverprofile=\$(COVERAGE_DIR)/coverage.out ./...
-	\$(GO) tool cover -html=\$(COVERAGE_DIR)/coverage.out -o \$(COVERAGE_DIR)/coverage.html
-	@echo \"Coverage report available at \$(COVERAGE_DIR)/coverage.html\"
+	@mkdir -p \\\$(COVERAGE_DIR)
+	\\\$(GOTEST) -race -coverprofile=\\\$(COVERAGE_DIR)/coverage.out ./...
+	\\\$(GO) tool cover -html=\\\$(COVERAGE_DIR)/coverage.out -o \\\$(COVERAGE_DIR)/coverage.html
+	@echo \"Coverage report available at \\\$(COVERAGE_DIR)/coverage.html\"
 
 # Code quality targets
 format: ## Format code
-	\$(GOFMT) -w -s .
+	\\\$(GOFMT) -w -s .
 
 # Utility targets
 clean: ## Clean build artifacts
-	rm -rf \$(BUILD_DIR)
-	rm -rf \$(COVERAGE_DIR)
+	rm -rf \\\$(BUILD_DIR)
+	rm -rf \\\$(COVERAGE_DIR)
 
 deps: ## Download and verify dependencies
-	\$(GOMOD) download
-	\$(GOMOD) verify
-	\$(GOMOD) tidy
+	\\\$(GOMOD) download
+	\\\$(GOMOD) verify
+	\\\$(GOMOD) tidy
 
 help: ## Display this help
 	@echo \"$project Makefile\"
@@ -202,7 +202,7 @@ help: ## Display this help
 	@echo \"Usage: make [target]\"
 	@echo \"\"
 	@echo \"Targets:\"
-	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' \$(MAKEFILE_LIST) | awk 'BEGIN {FS = \":.*?## \"}; {printf \"\\033[36m%-20s\\033[0m %s\\n\", \$$1, \$$2}'
+	@grep -h -E \"^[a-zA-Z_-]+:.*?## .*\" \\\$(MAKEFILE_LIST) | awk 'BEGIN {FS = \":.*?## \"}; {printf \"\\\\033[36m%-20s\\\\033[0m %s\\\\n\", \\\$1, \\\$2}'
 " > Makefile
 
     # Create .gitignore file

@@ -372,186 +372,151 @@ int main(void) {
 " > tests/test_main.c
 
     # Create a comprehensive Makefile
-    echo "# Project metadata
-PROJECT_NAME := $project
-CC           := clang
-AUTHOR       := \$(shell git config user.name)
-VERSION      := 0.1.0
+    echo "# $project Project Makefile
+# Simple and robust build system for macOS
+
+# Project configuration
+PROJECT := $project
+VERSION := 0.1.0
+CC      := clang
+SHELL   := /bin/bash
 
 # Directory structure
-SRC_DIR      := src
-INCLUDE_DIR  := include
-BUILD_DIR    := build
-BIN_DIR      := bin
-TEST_DIR     := tests
-DOC_DIR      := docs
+SRC_DIR   := src
+INC_DIR   := include
+BUILD_DIR := build
+BIN_DIR   := bin
+TEST_DIR  := tests
 
-# macOS specific settings
-MACOS_ARCH   ?= $(uname -m) # arm64 or x86_64
-OSX_SYSROOT  := $(xcrun --show-sdk-path)
-OSX_MIN_VER  := 11.0        # Minimum macOS version
+# Build type (debug or release)
+BUILD_TYPE ?= debug
 
-# Build configuration
-BUILD_TYPE   ?= debug  # debug or release
+# macOS SDK configuration
+MACOS_ARCH  := \$(shell uname -m)
+OSX_SYSROOT := \$(shell xcrun --show-sdk-path)
+OSX_MIN_VER := 11.0
 
-# Compiler flags for different build types
-CFLAGS_COMMON := -Wall -Wextra -pedantic -std=c11 -I\$(INCLUDE_DIR) \\
-                 -isysroot \$(OSX_SYSROOT) -mmacosx-version-min=\$(OSX_MIN_VER) \\
+# Compiler flags
+CFLAGS_COMMON := -Wall -Wextra -std=c11 -I\$(INC_DIR) \\
+                 -isysroot \$(OSX_SYSROOT) \\
+                 -mmacosx-version-min=\$(OSX_MIN_VER) \\
                  -arch \$(MACOS_ARCH)
-                 
-CFLAGS_DEBUG  := -g3 -O0 -DDEBUG -fsanitize=address,undefined
-CFLAGS_RELEASE := -O3 -DNDEBUG -march=native
 
-# Select flags based on build type
+# Debug and release specific flags
 ifeq (\$(BUILD_TYPE),debug)
-    CFLAGS := \$(CFLAGS_COMMON) \$(CFLAGS_DEBUG)
+    CFLAGS := \$(CFLAGS_COMMON) -g -O0 -DDEBUG -fsanitize=address,undefined
     LDFLAGS := -fsanitize=address,undefined
 else ifeq (\$(BUILD_TYPE),release)
-    CFLAGS := \$(CFLAGS_COMMON) \$(CFLAGS_RELEASE)
+    CFLAGS := \$(CFLAGS_COMMON) -O3 -DNDEBUG
     LDFLAGS :=
 else
-    \$(error Invalid BUILD_TYPE: \$(BUILD_TYPE). Use 'debug' or 'release')
+    \$(error Invalid BUILD_TYPE \$(BUILD_TYPE), must be 'debug' or 'release')
 endif
 
-# Find all source files
-SRCS         := \$(wildcard \$(SRC_DIR)/*.c)
-OBJS         := \$(patsubst \$(SRC_DIR)/%.c,\$(BUILD_DIR)/\$(BUILD_TYPE)/%.o,\$(SRCS))
-TEST_SRCS    := \$(wildcard \$(TEST_DIR)/*.c)
-TEST_OBJS    := \$(patsubst \$(TEST_DIR)/%.c,\$(BUILD_DIR)/\$(BUILD_TYPE)/%.o,\$(TEST_SRCS))
-TEST_BINS    := \$(patsubst \$(TEST_DIR)/%.c,\$(BIN_DIR)/\$(BUILD_TYPE)/%.test,\$(TEST_SRCS))
+# Find source files
+SOURCES := \$(wildcard \$(SRC_DIR)/*.c)
+OBJECTS := \$(SOURCES:\$(SRC_DIR)/%.c=\$(BUILD_DIR)/\$(BUILD_TYPE)/%.o)
 
-# Define targets
-TARGET       := \$(BIN_DIR)/\$(BUILD_TYPE)/\$(PROJECT_NAME)
+# Main executable
+TARGET := \$(BIN_DIR)/\$(BUILD_TYPE)/\$(PROJECT)
+
+# Tests (if they exist)
+TEST_SOURCES := \$(wildcard \$(TEST_DIR)/*.c)
+TEST_OBJECTS := \$(TEST_SOURCES:\$(TEST_DIR)/%.c=\$(BUILD_DIR)/\$(BUILD_TYPE)/test_%.o)
+TEST_TARGETS := \$(TEST_SOURCES:\$(TEST_DIR)/%.c=\$(BIN_DIR)/\$(BUILD_TYPE)/test_%)
 
 # Default target
 .PHONY: all
-all: \$(TARGET) compile_commands.json
+all: \$(TARGET)
 
 # Create directories
-\$(BUILD_DIR)/\$(BUILD_TYPE) \$(BIN_DIR)/\$(BUILD_TYPE):
-	@mkdir -p \$@
+\$(BUILD_DIR)/\$(BUILD_TYPE):
+	mkdir -p \$@
+
+\$(BIN_DIR)/\$(BUILD_TYPE):
+	mkdir -p \$@
 
 # Compile source files
 \$(BUILD_DIR)/\$(BUILD_TYPE)/%.o: \$(SRC_DIR)/%.c | \$(BUILD_DIR)/\$(BUILD_TYPE)
-	@echo \"[\$(BUILD_TYPE)] Compiling \$<...\"
-	@\$(CC) \$(CFLAGS) -c \$< -o \$@
+	@echo \"Compiling \$<\"
+	\$(CC) \$(CFLAGS) -c \$< -o \$@
 
-# Link the target
-\$(TARGET): \$(OBJS) | \$(BIN_DIR)/\$(BUILD_TYPE)
-	@echo \"[\$(BUILD_TYPE)] Linking \$@...\"
-	@\$(CC) \$(OBJS) -o \$@ \$(LDFLAGS)
-	@echo \"[\$(BUILD_TYPE)] Build successful: \$@\"
+# Link executable
+\$(TARGET): \$(OBJECTS) | \$(BIN_DIR)/\$(BUILD_TYPE)
+	@echo \"Linking \$(PROJECT)\"
+	\$(CC) \$(OBJECTS) \$(LDFLAGS) -o \$@
 
-# Compile test files
-\$(BUILD_DIR)/\$(BUILD_TYPE)/%.o: \$(TEST_DIR)/%.c | \$(BUILD_DIR)/\$(BUILD_TYPE)
-	@echo \"[\$(BUILD_TYPE)] Compiling test \$<...\"
-	@\$(CC) \$(CFLAGS) -c \$< -o \$@
+# Test compilation
+\$(BUILD_DIR)/\$(BUILD_TYPE)/test_%.o: \$(TEST_DIR)/%.c | \$(BUILD_DIR)/\$(BUILD_TYPE) 
+	@echo \"Compiling test \$<\"
+	\$(CC) \$(CFLAGS) -c \$< -o \$@
 
-# Build test binaries
-\$(BIN_DIR)/\$(BUILD_TYPE)/%.test: \$(BUILD_DIR)/\$(BUILD_TYPE)/%.o \$(filter-out \$(BUILD_DIR)/\$(BUILD_TYPE)/main.o,\$(OBJS)) | \$(BIN_DIR)/\$(BUILD_TYPE)
-	@echo \"[\$(BUILD_TYPE)] Linking test \$@...\"
-	@\$(CC) \$< \$(filter-out \$(BUILD_DIR)/\$(BUILD_TYPE)/main.o,\$(OBJS)) -o \$@ \$(LDFLAGS)
+# Link test binaries
+\$(BIN_DIR)/\$(BUILD_TYPE)/test_%: \$(BUILD_DIR)/\$(BUILD_TYPE)/test_%.o \$(filter-out \$(BUILD_DIR)/\$(BUILD_TYPE)/main.o,\$(OBJECTS)) | \$(BIN_DIR)/\$(BUILD_TYPE)
+	@echo \"Linking test \$@\"
+	\$(CC) \$< \$(filter-out \$(BUILD_DIR)/\$(BUILD_TYPE)/main.o,\$(OBJECTS)) \$(LDFLAGS) -o \$@
 
-# Generate compile_commands.json for clangd
-.PHONY: compile_commands.json
-compile_commands.json:
-	@echo \"Generating compile_commands.json for clangd...\"
-	@echo \"[\" > compile_commands.json
-	@for src in \$(SRCS); do \
-		echo \"  {\" >> compile_commands.json; \
-		echo \"    \\\"directory\\\": \\\"\$$(pwd)\\\",\" >> compile_commands.json; \
-		echo \"    \\\"command\\\": \\\"\$(CC) \$(CFLAGS) -c \$${src} -o \$(BUILD_DIR)/\$(BUILD_TYPE)/\$$(basename \$${src%.c}.o)\\\",\" >> compile_commands.json; \
-		echo \"    \\\"file\\\": \\\"\$${src}\\\"\" >> compile_commands.json; \
-		if [ \"\$${src}\" != \"\$$(echo \$(SRCS) | rev | cut -d' ' -f1 | rev)\" ]; then \
-			echo \"  },\" >> compile_commands.json; \
-		else \
-			echo \"  }\" >> compile_commands.json; \
-		fi; \
+# Build and run tests
+.PHONY: test
+test:
+ifneq (\$(TEST_SOURCES),)
+	@\$(MAKE) \$(TEST_TARGETS)
+	@echo \"Running tests...\"
+	@for test in \$(TEST_TARGETS); do \\
+		echo \"Running \$\$test\"; \\
+		\$\$test; \\
 	done
-	@echo \"]\" >> compile_commands.json
-	@echo \"compile_commands.json generated\"
+else
+	@echo \"No tests found in \$(TEST_DIR)\"
+endif
 
-# Build both debug and release
-.PHONY: all-builds
-all-builds:
-	@\$(MAKE) BUILD_TYPE=debug
-	@\$(MAKE) BUILD_TYPE=release
-
-# Clean the build
-.PHONY: clean
-clean:
-	@echo \"Cleaning...\"
-	@rm -rf \$(BUILD_DIR) \$(BIN_DIR) compile_commands.json
-
-# Run the target
+# Run the program
 .PHONY: run
 run: \$(TARGET)
-	@echo \"[\$(BUILD_TYPE)] Running \$(TARGET)...\"
-	@\$(TARGET)
+	@echo \"Running \$(PROJECT)\"
+	\$(TARGET)
 
-# Memory leak check using leaks (macOS tool)
+# Clean build files
+.PHONY: clean
+clean:
+	@echo \"Cleaning build files\"
+	rm -rf \$(BUILD_DIR) \$(BIN_DIR)
+
+# Memory check with leaks (macOS)
 .PHONY: memcheck
 memcheck: \$(TARGET)
-	@echo \"[\$(BUILD_TYPE)] Running memory check with leaks...\"
-	@leaks -atExit -- \$(TARGET)
+	@echo \"Running with memory leak detection\"
+	leaks -atExit -- \$(TARGET)
 
-# Static analysis with clang analyzer
-.PHONY: analyze
-analyze:
-	@echo \"[\$(BUILD_TYPE)] Analyzing code with clang analyzer...\"
-	@mkdir -p \$(BIN_DIR)/analysis
-	@scan-build \$(CC) \$(CFLAGS) \$(SRCS) -o \$(BIN_DIR)/analysis/analyze
+# Generate compile commands for clangd
+.PHONY: compiledb
+compiledb:
+	@echo \"Generating compile_commands.json\"
+	@echo \"[\" > compile_commands.json
+	@for src in \$(SOURCES); do \\
+		echo \"  {\" >> compile_commands.json; \\
+		echo \"    \\\"directory\\\": \\\"\$(shell pwd)\\\",\" >> compile_commands.json; \\
+		echo \"    \\\"command\\\": \\\"\$(CC) \$(CFLAGS) -c \$\$src -o \$(BUILD_DIR)/\$(BUILD_TYPE)/\$\${src#\$(SRC_DIR)/}.o\\\",\" >> compile_commands.json; \\
+		echo \"    \\\"file\\\": \\\"\$\$src\\\"\" >> compile_commands.json; \\
+		if [ \"\$\$src\" != \"\$(lastword \$(SOURCES))\" ]; then \\
+			echo \"  },\" >> compile_commands.json; \\
+		else \\
+			echo \"  }\" >> compile_commands.json; \\
+		fi; \\
+	done
+	@echo \"]\" >> compile_commands.json
 
-# Code coverage
-.PHONY: coverage
-coverage:
-	@echo \"Building with code coverage...\"
-	@\$(MAKE) BUILD_TYPE=debug CFLAGS=\"\$(CFLAGS_COMMON) -g3 -O0 -DDEBUG --coverage\" LDFLAGS=\"--coverage\"
-	@\$(MAKE) test BUILD_TYPE=debug CFLAGS=\"\$(CFLAGS_COMMON) -g3 -O0 -DDEBUG --coverage\" LDFLAGS=\"--coverage\"
-	@mkdir -p \$(BIN_DIR)/coverage
-	@lcov --capture --directory \$(BUILD_DIR)/debug --output-file \$(BIN_DIR)/coverage/coverage.info
-	@lcov --remove \$(BIN_DIR)/coverage/coverage.info '/usr/*' --output-file \$(BIN_DIR)/coverage/coverage.info
-	@genhtml \$(BIN_DIR)/coverage/coverage.info --output-directory \$(BIN_DIR)/coverage/html
-	@echo \"Coverage report generated in \$(BIN_DIR)/coverage/html\"
-
-# Generate documentation with doxygen if available
-.PHONY: docs
-docs:
-	@if command -v doxygen &> /dev/null; then \
-		echo \"Generating documentation with doxygen...\"; \
-		doxygen Doxyfile 2> /dev/null || echo \"No Doxyfile found. Creating one...\"; \
-		if [ ! -f Doxyfile ]; then \
-			doxygen -g; \
-			sed -i '' 's/PROJECT_NAME\\s*=.*/PROJECT_NAME = \$(PROJECT_NAME)/g' Doxyfile; \
-			sed -i '' 's/OUTPUT_DIRECTORY\\s*=.*/OUTPUT_DIRECTORY = \$(DOC_DIR)/g' Doxyfile; \
-			doxygen Doxyfile; \
-		fi; \
-	else \
-		echo \"Doxygen not found. Please install doxygen.\"; \
-	fi
-
-# Format code with clang-format
-.PHONY: format
-format:
-	@echo \"Formatting code...\"
-	@find \$(SRC_DIR) \$(INCLUDE_DIR) \$(TEST_DIR) -type f -name \"*.c\" -o -name \"*.h\" | xargs clang-format -i -style=file
-
-# Help target
 .PHONY: help
 help:
-	@echo \"\$(PROJECT_NAME) Makefile Help\"
-	@echo \"=======================\" 
-	@echo \"make [BUILD_TYPE=debug|release] - Build the project (debug is default)\"
-	@echo \"make all-builds               - Build both debug and release versions\"
-	@echo \"make test                     - Build and run tests\"
-	@echo \"make run                      - Build and run the project\"
-	@echo \"make clean                    - Clean build files\"
-	@echo \"make memcheck                 - Run with leaks tool (macOS)\"
-	@echo \"make analyze                  - Run static analyzer\"
-	@echo \"make coverage                 - Generate code coverage report\"
-	@echo \"make docs                     - Generate documentation\"
-	@echo \"make format                   - Format code with clang-format\"
-	@echo \"make compile_commands.json    - Generate compilation database for clangd\"
+	@echo \"\$(PROJECT) v\$(VERSION) build system\"
+	@echo \"Usage:\"
+	@echo \"  make [BUILD_TYPE=debug|release] - Build the project\"
+	@echo \"  make test   - Build and run tests\"
+	@echo \"  make run    - Run the program\"
+	@echo \"  make clean  - Remove build files\"
+	@echo \"  make memcheck - Run with memory leak detection\"
+	@echo \"  make compiledb - Generate compile_commands.json\"
+	@echo \"  make help   - Show this help\"
 " > Makefile
 
     # Create .gitignore file
