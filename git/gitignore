@@ -185,3 +185,7 @@ __pycache__/
 *.p12
 *.crt
 *.gpg 
+
+# Claude 
+.claude/
+Claude.md 

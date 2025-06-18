@@ -47,3 +47,4 @@ shell-integration = fish
 
 ## keymaps
 keybind = global:cmd+`=toggle_quick_terminal
+keybind = shift+enter=text:\n

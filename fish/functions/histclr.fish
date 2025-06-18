@@ -6,10 +6,6 @@ function histclr --description "Clear fish history in all sessions"
     
     # Check if history file exists
     if test -f $history_file
-        # Create backup before clearing (just in case)
-        set -l backup_file "$history_file.bak"
-        cp -f $history_file $backup_file
-        
         # Truncate the history file
         echo -n "" > $history_file
         
@@ -18,7 +14,6 @@ function histclr --description "Clear fish history in all sessions"
         
         set_color green
         echo "✓ Fish history has been cleared across all sessions"
-        echo "  A backup was saved to $backup_file"
         set_color normal
     else
         set_color yellow

@@ -99,7 +99,7 @@ return {
                 dap_debug_keymap = false,
                 dap_debug_gui = false,
                 dap_debug_vt = false,
-                build_tags = "tag1,tag2",
+                -- build_tags = "tag1,tag2",
                 textobjects = true,
                 test_runner = "go", -- richgo, go, richgo, dlv, ginkgo
                 verbose_tests = true,

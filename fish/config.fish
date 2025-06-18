@@ -58,6 +58,7 @@ fish_add_path $HOME/.local/bin
 
 # Go configuration
 if type -q go
+    set -gx GOROOT /opt/homebrew/opt/go/libexec
     set -gx GOPATH $HOME/.golang
     fish_add_path $GOPATH/bin
     
