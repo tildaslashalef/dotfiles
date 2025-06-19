@@ -54,16 +54,19 @@ return {
             -- AI keybindings
             vim.keymap.set("n", "<leader>ai", function()
                 local suggestion = require("copilot.suggestion")
-                suggestion.toggle_auto_trigger()
-
-                -- Check if auto trigger is enabled by testing if suggestions appear
-                local is_enabled = suggestion.is_visible() or vim.g.copilot_auto_trigger ~= false
-                if is_enabled then
-                    vim.notify("Copilot auto-trigger enabled", vim.log.levels.INFO)
+                local client = require("copilot.client")
+                
+                -- Check if copilot is currently disabled
+                if client.is_disabled() then
+                    -- Enable copilot (auto-trigger is part of enabling)
+                    vim.cmd("Copilot enable")
+                    vim.notify("Copilot enabled", vim.log.levels.INFO)
                 else
-                    vim.notify("Copilot auto-trigger disabled", vim.log.levels.INFO)
+                    -- Disable copilot completely
+                    vim.cmd("Copilot disable")
+                    vim.notify("Copilot disabled", vim.log.levels.INFO)
                 end
-            end, { desc = "Toggle Copilot auto-trigger" })
+            end, { desc = "Toggle Copilot" })
 
             vim.keymap.set("n", "<leader>ap", function()
                 require("copilot.panel").open()

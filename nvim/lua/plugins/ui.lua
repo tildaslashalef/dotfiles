@@ -485,8 +485,15 @@ return {
                         {
                             function()
                                 local ok, copilot_api = pcall(require, "copilot.api")
-                                if not ok then
+                                local ok_client, copilot_client = pcall(require, "copilot.client")
+                                
+                                if not ok or not ok_client then
                                     return ""
+                                end
+
+                                -- Check if copilot is disabled first
+                                if copilot_client.is_disabled() then
+                                    return "󰚩" -- Disabled icon (crossed out or different)
                                 end
 
                                 local status = copilot_api.status.data
@@ -506,8 +513,15 @@ return {
                             end,
                             color = function()
                                 local ok, copilot_api = pcall(require, "copilot.api")
-                                if not ok then
+                                local ok_client, copilot_client = pcall(require, "copilot.client")
+                                
+                                if not ok or not ok_client then
                                     return { fg = "#6c7086" }
+                                end
+
+                                -- Check if copilot is disabled first
+                                if copilot_client.is_disabled() then
+                                    return { fg = "#f38ba8" } -- Red color for disabled
                                 end
 
                                 local status = copilot_api.status.data
