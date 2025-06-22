@@ -1,0 +1,109 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Wait 10 milliseconds for starship to check files
+command_timeout = 1000
+scan_timeout = 30
+
+# Add a blank line before each prompt
+add_newline = true
+
+
+# Set the format of the prompt
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$c\
+$golang\
+$zig\
+$python\
+$bun\
+$rust\
+$kubernetes\
+$cmd_duration\
+$line_break\
+$character"""
+
+# Replace the "❯" symbol with "→" in the prompt
+[character]
+success_symbol = "[→](bold green)"
+error_symbol = "[→](bold red)"
+
+# Disable truncation in the directory module
+[directory]
+truncation_length = 0
+truncate_to_repo = false
+fish_style_pwd_dir_length = 1
+style = "bold blue"
+
+# Show Git branch and status
+[git_branch]
+symbol = "🌱 "
+truncation_length = 32
+truncation_symbol = ""
+
+[git_status]
+style = "bold blue"
+format = '([\[$all_status$ahead_behind\]]($style) )'
+conflicted = "="
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+untracked = "?${count}"
+stashed = "$${count}"
+modified = "!${count}"
+staged = "+${count}"
+renamed = "»${count}"
+deleted = "✘${count}"
+
+# Show Kubernetes context and namespace when in a k8s environment
+[kubernetes]
+disabled = false
+style = "cyan bold"
+symbol = "☸ "
+format = "on [$symbol$context( \\($namespace\\))]($style) "
+
+# Show golang version
+[golang]
+symbol = "🐹 "
+style = "bold cyan"
+format = "via [$symbol$version]($style) "
+
+# Show Zig version
+[zig]
+symbol = "⚡ "
+style = "bold yellow"
+format = "via [$symbol$version]($style) "
+
+# Show Rust version
+[rust]
+symbol = "🦀 "
+style = "bold red"
+format = "via [$symbol$version]($style) "
+
+# Show Python virtualenv information
+[python]
+symbol = "🐍 "
+pyenv_version_name = true
+style = "bold green"
+format = 'via [${symbol}${pyenv_prefix}${version}( \($virtualenv\))]($style) '
+
+# Show Bun version
+[bun]
+symbol = "🍞 "
+style = "bold yellow"
+format = "via [$symbol$version]($style) "
+
+[docker_context]
+symbol = "🐳 "
+style = "bold blue"
+format = "via [$symbol$context]($style) "
+
+# Command duration display
+[cmd_duration]
+min_time = 500
+format = "took [$duration](bold yellow)"

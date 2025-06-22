@@ -1,0 +1,70 @@
+# Taps
+tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/cask-fonts"
+tap "homebrew/core"
+tap "oven-sh/bun"
+
+# CLI Tools
+brew "fish"          # Fish shell
+brew "neovim"        # Neovim editor
+brew "ripgrep"       # Fast grep
+brew "fd"            # Fast find
+brew "fzf"           # Fuzzy finder
+brew "bat"           # Better cat
+brew "eza"           # Modern ls
+brew "git"           # Git
+brew "gh"            # GitHub CLI
+brew "wget"          # Network downloader
+brew "curl"          # HTTP client
+brew "jq"            # JSON processor
+brew "yq"            # YAML processor
+brew "tree"          # Directory tree
+brew "lazygit"       # Terminal UI for git
+brew "btop"          # Modern system monitor
+brew "cmake"         # Build system
+brew "bitwarden-cli" # Bitwarden CLI
+brew "zoxide"        # Smarter cd command with learning
+brew "starship"      # Cross-shell prompt
+brew "dust"          # More intuitive du
+brew "procs"         # Modern replacement for ps
+brew "sd"            # Intuitive search and replace
+brew "hyperfine"     # Command-line benchmarking tool
+brew "tokei"         # Code statistics (count lines of code)
+brew "tealdeer"      # Simplified man pages with examples
+brew "git-delta"     # Syntax-highlighting pager for git diffs
+brew "xh"            # Friendly HTTP tool (like curl)
+brew "gpg-tui"       # Terminal user interface for GPG key management
+brew "uv"            # Package manager for python written in rust
+brew "kubectx"       # Kubernetes context manager
+brew "kubens"        # Kubernetes namespace manager
+brew "fastfetch"     # System info tool
+brew "git-delta"     # Syntax-highlighting pager for git diffs
+
+# Programming Languages
+brew "go"            # Go language
+brew "rust"          # Rust language
+brew "zig"           # Zig language
+brew "gcc"           # GNU compiler collection
+brew "llvm"          # LLVM toolchain
+brew "bun"           # JavaScript runtime, bundler, transpiler and package manager
+brew "python"        # Python language
+
+# Development Tools
+brew "terraform"     # Infrastructure as Code tool
+brew "awscli"        # AWS Command Line Interface
+brew "kubectl"       # Kubernetes command-line tool
+
+# Fonts
+cask "font-jetbrains-mono-nerd-font" # Modern font designed specifically for coding, with excellent readability and good support for programming ligatures.
+cask "font-fira-code-nerd-font"     # Known for its programming ligatures (special character combinations that look like single symbols), making code more readable.
+cask "font-hack-nerd-font"          # A clean, highly readable font that's great for long coding sessions.
+cask "font-cascadia-code-nerd-font" # Microsoft's modern programming font, designed with modern development in mind.
+cask "font-meslo-lg-nerd-font"      # A clean, professional font popular in the developer community.
+cask "font-terminus-nerd-font"      # Bitmap-style font known for its crisp rendering and excellent readability at small sizes.
+
+# Applications
+cask "ghostty"
+cask "tableplus"
+cask "bitwarden"
+cask "docker"

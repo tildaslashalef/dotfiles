@@ -1,0 +1,50 @@
+# Ghostty terminal configuration
+
+# Theme
+theme = light:GruvboxLightHard,dark:GruvboxDarkHard
+
+
+# Font configuration
+font-family = "JetBrainsMono Nerd Font"
+font-size = 14
+
+# don't ask when closing
+confirm-close-surface = false
+
+# don't show an overlay when resizing a window
+resize-overlay = never
+
+# always save the state of window when quitting
+window-save-state = always
+
+# Cursor
+mouse-hide-while-typing = true
+cursor-style = block
+cursor-style-blink = false
+
+## Background
+background-opacity = 0.95
+
+# Window
+window-theme = dark
+window-width = 200
+window-height = 54
+# window-padding-x = 15
+# window-padding-y = 15
+window-decoration = true
+macos-option-as-alt = true
+macos-non-native-fullscreen = true
+window-inherit-working-directory=true
+
+## Clipboard
+clipboard-read = "allow"
+clipboard-paste-protection = false
+copy-on-select = clipboard
+
+# Shell
+shell-integration = fish
+
+
+## keymaps
+keybind = global:cmd+`=toggle_quick_terminal
+keybind = shift+enter=text:\n
