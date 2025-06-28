@@ -159,6 +159,15 @@ return {
             
             local telescope = require("telescope")
             telescope.setup(opts)
+            
+            -- Add which-key groups for Telescope operations
+            require("which-key").add({
+                { "<leader>f", group = "file/find" },
+                { "<leader>s", group = "search" },
+            })
+            
+            -- File operations
+            vim.keymap.set("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New file" })
 
             -- Load extensions after setup with better error handling
             local function load_fzf_extension()
@@ -199,6 +208,33 @@ return {
         keys = {
             { "<leader>e", "<cmd>Neotree toggle position=right<cr>", desc = "Explorer NeoTree" },
             { "<leader>E", "<cmd>Neotree focus position=right<cr>",  desc = "Focus NeoTree" },
+            -- Additional explorer operations
+            { "<leader>ee", function() vim.cmd("Neotree toggle") end, desc = "Toggle Explorer" },
+            { "<leader>ef", function() vim.cmd("Neotree focus filesystem") end, desc = "Focus Filesystem" },
+            { "<leader>eb", function() vim.cmd("Neotree buffers") end, desc = "Show Buffers" },
+            { "<leader>eg", function() vim.cmd("Neotree git_status") end, desc = "Git Status" },
+            { "<leader>es", function() vim.cmd("Neotree document_symbols") end, desc = "Document Symbols" },
+            { "<leader>ec", function() vim.cmd("Neotree close") end, desc = "Close Explorer" },
+            { "<leader>er", function() vim.cmd("Neotree reveal") end, desc = "Reveal Current File" },
+            { "<leader>eR", function() vim.cmd("Neotree refresh") end, desc = "Refresh Explorer" },
+            -- Explorer file operations
+            { "<leader>enf", function()
+                local input = vim.fn.input("New file name: ")
+                if input ~= "" then
+                    local current_dir = vim.fn.expand("%:p:h")
+                    local file_path = current_dir .. "/" .. input
+                    vim.cmd("edit " .. file_path)
+                end
+            end, desc = "New File" },
+            { "<leader>end", function()
+                local input = vim.fn.input("New directory name: ")
+                if input ~= "" then
+                    local current_dir = vim.fn.expand("%:p:h")
+                    local dir_path = current_dir .. "/" .. input
+                    vim.fn.mkdir(dir_path, "p")
+                    vim.notify("Created directory: " .. dir_path)
+                end
+            end, desc = "New Directory" },
         },
         deactivate = function()
             vim.cmd([[Neotree close]])
@@ -319,6 +355,13 @@ return {
                 { event = events.FILE_RENAMED, handler = on_move },
             })
             require("neo-tree").setup(opts)
+            
+            -- Add which-key groups for Explorer operations
+            require("which-key").add({
+                { "<leader>e", group = "explorer" },
+                { "<leader>en", group = "new" },
+            })
+            
             vim.api.nvim_create_autocmd("TermClose", {
                 pattern = "*lazygit",
                 callback = function()
@@ -340,6 +383,8 @@ return {
             { "<leader>bo", "<Cmd>BufferLineCloseOthers<CR>",          desc = "Delete other buffers" },
             { "<leader>br", "<Cmd>BufferLineCloseRight<CR>",           desc = "Delete buffers to the right" },
             { "<leader>bl", "<Cmd>BufferLineCloseLeft<CR>",            desc = "Delete buffers to the left" },
+            { "<leader>bb", "<cmd>e #<cr>",                            desc = "Switch to other buffer" },
+            { "<leader>`",  "<cmd>e #<cr>",                            desc = "Switch to other buffer" },
             { "<S-h>",      "<cmd>BufferLineCyclePrev<cr>",            desc = "Prev buffer" },
             { "<S-l>",      "<cmd>BufferLineCycleNext<cr>",            desc = "Next buffer" },
             { "[b",         "<cmd>BufferLineCyclePrev<cr>",            desc = "Prev buffer" },
@@ -389,6 +434,12 @@ return {
         },
         config = function(_, opts)
             require("bufferline").setup(opts)
+            
+            -- Add which-key groups for Buffer operations
+            require("which-key").add({
+                { "<leader>b", group = "buffers" },
+            })
+            
             -- Fix bufferline when restoring a session
             vim.api.nvim_create_autocmd("BufAdd", {
                 callback = function()

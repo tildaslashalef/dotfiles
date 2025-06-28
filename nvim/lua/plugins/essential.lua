@@ -96,6 +96,14 @@ return {
             { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
             { "<leader>qd", function() require("persistence").stop() end,                desc = "Don't Save Current Session" },
         },
+        config = function(_, opts)
+            require("persistence").setup(opts)
+            
+            -- Add which-key groups for Session/Quit operations
+            require("which-key").add({
+                { "<leader>q", group = "quit/session" },
+            })
+        end,
     },
 
     -- Library used by other plugins
@@ -250,6 +258,20 @@ return {
                 map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
             end,
         },
+        config = function(_, opts)
+            require("gitsigns").setup(opts)
+            
+            -- Add which-key groups for Git operations
+            require("which-key").add({
+                { "<leader>g", group = "git" },
+                { "<leader>gh", group = "hunks" },
+            })
+            
+            -- Additional git operations
+            vim.keymap.set("n", "<leader>gd", function() require("gitsigns").diffthis() end, { desc = "Git diff current file" })
+            vim.keymap.set("n", "<leader>gD", function() require("gitsigns").diffthis("~") end, { desc = "Git diff project" })
+            vim.keymap.set("n", "<leader>gb", function() require("gitsigns").blame_line({ full = true }) end, { desc = "Git blame current line" })
+        end,
     },
 
     -- Trouble.nvim - Pretty diagnostics, references, telescope results, quickfix and location list
@@ -273,8 +295,20 @@ return {
                 },
             },
         },
-        -- Note: Trouble keymaps are centralized in keymaps.lua
         keys = {
+            -- Trouble operations
+            { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
+            { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
+            { "<leader>xl", "<cmd>lopen<cr>", desc = "Location List" },
+            { "<leader>xq", "<cmd>copen<cr>", desc = "Quickfix List" },
+            { "<leader>xL", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
+            { "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
+            { "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols (Trouble)" },
+            { "<leader>xc", "<cmd>TroubleClose<cr>", desc = "Close Trouble Window" },
+            -- Navigation
+            { "[d", vim.diagnostic.goto_prev, desc = "Go to previous diagnostic message" },
+            { "]d", vim.diagnostic.goto_next, desc = "Go to next diagnostic message" },
+            { "<leader>xd", vim.diagnostic.setloclist, desc = "Open diagnostics list" },
             {
                 "[q",
                 function()
@@ -304,5 +338,13 @@ return {
                 desc = "Next trouble/quickfix item",
             },
         },
+        config = function(_, opts)
+            require("trouble").setup(opts)
+            
+            -- Add which-key groups for Diagnostics/Quickfix operations
+            require("which-key").add({
+                { "<leader>x", group = "diagnostics/quickfix" },
+            })
+        end,
     },
 }

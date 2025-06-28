@@ -22,6 +22,7 @@ return {
                 "goimports",
                 "rustfmt",
                 "prettier",
+                "prettierd",   
                 "clang-format",
                 "stylua",
 
@@ -470,6 +471,18 @@ return {
                     end,
                 })
             end
+            
+            -- Add which-key groups for LSP/Code operations
+            require("which-key").add({
+                { "<leader>c", group = "code" },
+            })
+            
+            -- LSP Keymaps
+            local map = vim.keymap.set
+            map("n", "<leader>ca", function() vim.lsp.buf.code_action() end, { desc = "Code actions" })
+            map("n", "<leader>cr", function() vim.lsp.buf.rename() end, { desc = "Rename" })
+            map({ "n", "v" }, "<leader>cf", function() require("conform").format() end, { desc = "Format" })
+            map("n", "<leader>cd", function() vim.diagnostic.open_float() end, { desc = "Show diagnostics" })
         end,
     },
 
@@ -500,16 +513,16 @@ return {
                 go = { "goimports", "gofumpt" },
                 rust = { "rustfmt" },
                 zig = { "zigfmt" },
-                javascript = { { "prettierd", "prettier" } },
-                typescript = { { "prettierd", "prettier" } },
-                javascriptreact = { { "prettierd", "prettier" } },
-                typescriptreact = { { "prettierd", "prettier" } },
-                json = { { "prettierd", "prettier" } },
-                html = { { "prettierd", "prettier" } },
-                css = { { "prettierd", "prettier" } },
-                markdown = { { "prettierd", "prettier" } },
-                c = { "clang_format" },
-                cpp = { "clang_format" },
+                javascript = { "prettierd", "prettier", stop_after_first = true },
+                typescript = { "prettierd", "prettier", stop_after_first = true },
+                javascriptreact = { "prettierd", "prettier", stop_after_first = true },
+                typescriptreact = { "prettierd", "prettier", stop_after_first = true },
+                json = { "prettierd", "prettier", stop_after_first = true },
+                html = { "prettierd", "prettier", stop_after_first = true },
+                css = { "prettierd", "prettier", stop_after_first = true },
+                markdown = { "prettierd", "prettier", stop_after_first = true },
+                c = { "clang-format" },
+                cpp = { "clang-format" },
                 lua = { "stylua" },
             },
             format_on_save = {
@@ -520,7 +533,7 @@ return {
                 goimports = {
                     prepend_args = { "-local", "github.com/tildaslashalef" }, -- Adjust as needed
                 },
-                clang_format = {
+                ["clang-format"] = {
                     prepend_args = { "--style=llvm" },
                 },
             },

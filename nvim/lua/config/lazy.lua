@@ -30,28 +30,7 @@ require("lazy").setup({
         -- Import our custom plugins
         { import = "plugins" },
 
-        -- Import optional modules based on configuration
-        {
-            import = "modules.debugging",
-            enabled = vim.g.enable_debugging_module,
-            cond = function()
-                return vim.g.enable_debugging_module
-            end,
-        },
-        {
-            import = "modules.testing",
-            enabled = vim.g.enable_testing_module,
-            cond = function()
-                return vim.g.enable_testing_module
-            end,
-        },
-        {
-            import = "modules.documentation",
-            enabled = vim.g.enable_docs_module,
-            cond = function()
-                return vim.g.enable_docs_module
-            end,
-        },
+
     },
     defaults = {
         -- It's recommended to leave version=false for now, since a lot the plugin that support versioning,
@@ -70,16 +49,26 @@ require("lazy").setup({
         },
         reset_packpath = true, -- reset the package path to improve startup time
         rtp = {
-            -- disable some rtp plugins
+            -- disable builtin plugins we don't need
             disabled_plugins = {
                 "gzip",
+                "zip",
+                "zipPlugin",
+                "tar",
+                "tarPlugin",
+                "getscript",
+                "getscriptPlugin",
+                "vimball",
+                "vimballPlugin",
+                "2html_plugin",
+                "logipat",
+                "rrhelper",
+                "spellfile_plugin",
                 "matchit",
                 "matchparen",
                 "netrwPlugin",
-                "tarPlugin",
                 "tohtml",
                 "tutor",
-                "zipPlugin",
             },
         },
     },
