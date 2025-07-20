@@ -33,7 +33,7 @@ return {
                         accept_line = false,
                         next = "<C-j>",
                         prev = "<C-k>",
-                        dismiss = "<C-o>",
+                        dismiss = "<C-x>",
                     },
                 },
                 filetypes = {
@@ -114,78 +114,12 @@ return {
         ft = { "go", "gomod" },
         build = ':lua require("go.install").update_all_sync()', -- if you need to install/update all binaries
         keys = {
-            -- Go-specific keybindings (using <leader>go prefix to avoid git conflicts)
-            { "<leader>got", "<cmd>GoTest<cr>",       desc = "Go Test",           ft = "go" },
-            { "<leader>goT", "<cmd>GoTestPkg<cr>",    desc = "Go Test Package",   ft = "go" },
-            { "<leader>gob", "<cmd>GoBuild<cr>",      desc = "Go Build",          ft = "go" },
-            { "<leader>gor", "<cmd>GoRun<cr>",        desc = "Go Run",            ft = "go" },
-            { "<leader>goc", "<cmd>GoCoverage<cr>",   desc = "Go Coverage",       ft = "go" },
-            { "<leader>goi", "<cmd>GoImplements<cr>", desc = "Go Implements",     ft = "go" },
-            { "<leader>gos", "<cmd>GoFillStruct<cr>", desc = "Go Fill Struct",    ft = "go" },
-            { "<leader>gof", "<cmd>GoFmt<cr>",        desc = "Go Format",         ft = "go" },
-            { "<leader>goI", "<cmd>GoImport<cr>",     desc = "Go Import",         ft = "go" },
-            { "<leader>goA", "<cmd>GoAlt<cr>",        desc = "Go Alternate File", ft = "go" },
-            { "<leader>god", "<cmd>GoDoc<cr>",        desc = "Go Documentation",  ft = "go" },
-            { "<leader>gop", "<cmd>GoPlay<cr>",       desc = "Go Playground",     ft = "go" },
+            -- Essential Go shortcuts only (simplified from 12 to 4)
+            { "<leader>gt", "<cmd>GoTest<cr>",  desc = "Go Test",   ft = "go" },
+            { "<leader>gr", "<cmd>GoRun<cr>",   desc = "Go Run",    ft = "go" },
+            { "<leader>gb", "<cmd>GoBuild<cr>", desc = "Go Build",  ft = "go" },
+            { "<leader>gf", "<cmd>GoFmt<cr>",   desc = "Go Format", ft = "go" },
         },
-    },
-
-    -- Rust language enhancements
-    {
-        "mrcjkb/rustaceanvim",
-        version = '^6',
-        ft = { "rust" },
-        opts = {
-            server = {
-                on_attach = function(client, bufnr)
-                    -- Rust-specific keybindings
-                    vim.keymap.set("n", "<leader>rt", "<cmd>RustLsp testables<cr>",
-                        { desc = "Rust Test", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>rr", "<cmd>RustLsp runnables<cr>", { desc = "Rust Run", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>rd", "<cmd>RustLsp debuggables<cr>",
-                        { desc = "Rust Debug", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>re", "<cmd>RustLsp expandMacro<cr>",
-                        { desc = "Rust Expand Macro", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>rc", "<cmd>RustLsp openCargo<cr>",
-                        { desc = "Rust Open Cargo.toml", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>rp", "<cmd>RustLsp parentModule<cr>",
-                        { desc = "Rust Parent Module", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>rj", "<cmd>RustLsp joinLines<cr>",
-                        { desc = "Rust Join Lines", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>rH", "<cmd>RustLsp hover actions<cr>",
-                        { desc = "Rust Hover Actions", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>rC", "<cmd>RustLsp openDocs<cr>",
-                        { desc = "Rust Open Docs", buffer = bufnr })
-                end,
-                default_settings = {
-                    -- rust-analyzer language server configuration
-                    ["rust-analyzer"] = {
-                        cargo = {
-                            allFeatures = true,
-                            loadOutDirsFromCheck = true,
-                            runBuildScripts = true,
-                        },
-                        -- Add clippy lints for Rust.
-                        checkOnSave = {
-                            allFeatures = true,
-                            command = "clippy",
-                            extraArgs = { "--no-deps" },
-                        },
-                        procMacro = {
-                            enable = true,
-                            ignored = {
-                                ["async-trait"] = { "async_trait" },
-                                ["napi-derive"] = { "napi" },
-                                ["async-recursion"] = { "async_recursion" },
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        config = function(_, opts)
-            vim.g.rustaceanvim = vim.tbl_deep_extend("force", {}, opts or {})
-        end,
     },
 
     -- Zig language support
@@ -196,21 +130,15 @@ return {
             -- Zig-specific settings
             vim.g.zig_fmt_autosave = 0 -- We handle formatting via conform.nvim
 
-            -- Zig-specific keybindings
+            -- Essential Zig shortcuts only (simplified from 7 to 4)
             vim.api.nvim_create_autocmd("FileType", {
                 pattern = "zig",
                 callback = function(args)
                     local bufnr = args.buf
-                    vim.keymap.set("n", "<leader>zb", "<cmd>!zig build<cr>", { desc = "Zig Build", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>zr", "<cmd>!zig run %<cr>", { desc = "Zig Run", buffer = bufnr })
                     vim.keymap.set("n", "<leader>zt", "<cmd>!zig test %<cr>", { desc = "Zig Test", buffer = bufnr })
+                    vim.keymap.set("n", "<leader>zr", "<cmd>!zig run %<cr>", { desc = "Zig Run", buffer = bufnr })
+                    vim.keymap.set("n", "<leader>zb", "<cmd>!zig build<cr>", { desc = "Zig Build", buffer = bufnr })
                     vim.keymap.set("n", "<leader>zf", "<cmd>!zig fmt %<cr>", { desc = "Zig Format", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>zc", "<cmd>!zig build-exe %<cr>",
-                        { desc = "Zig Compile", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>zd", "<cmd>!zig build-exe -O Debug %<cr>",
-                        { desc = "Zig Debug Build", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>zo", "<cmd>!zig build-exe -O ReleaseFast %<cr>",
-                        { desc = "Zig Optimized Build", buffer = bufnr })
                 end,
             })
         end,
@@ -218,36 +146,10 @@ return {
 
     -- Note: TypeScript treesitter parsers are configured in editor.lua
 
-    -- Package.json support
-    {
-        "vuki656/package-info.nvim",
-        dependencies = { "MunifTanjim/nui.nvim" },
-        ft = "json",
-        config = function()
-            require("package-info").setup()
-
-            -- Package.json keybindings
-            vim.keymap.set("n", "<leader>ns", "<cmd>lua require('package-info').show()<cr>",
-                { desc = "Show package info" })
-            vim.keymap.set("n", "<leader>nc", "<cmd>lua require('package-info').hide()<cr>",
-                { desc = "Hide package info" })
-            vim.keymap.set("n", "<leader>nt", "<cmd>lua require('package-info').toggle()<cr>",
-                { desc = "Toggle package info" })
-            vim.keymap.set("n", "<leader>nu", "<cmd>lua require('package-info').update()<cr>",
-                { desc = "Update package" })
-            vim.keymap.set("n", "<leader>nd", "<cmd>lua require('package-info').delete()<cr>",
-                { desc = "Delete package" })
-            vim.keymap.set("n", "<leader>ni", "<cmd>lua require('package-info').install()<cr>",
-                { desc = "Install package" })
-            vim.keymap.set("n", "<leader>np", "<cmd>lua require('package-info').change_version()<cr>",
-                { desc = "Change package version" })
-        end,
-    },
-
-    -- C/C++ enhancements
+    -- C language enhancements (C only, no C++)
     {
         "p00f/clangd_extensions.nvim",
-        ft = { "c", "cpp" },
+        ft = { "c" },
         config = function()
             require("clangd_extensions").setup({
                 inlay_hints = {
@@ -294,112 +196,15 @@ return {
                 },
             })
 
-            -- C/C++ specific keybindings
+            -- Essential C shortcuts only (simplified)
             vim.api.nvim_create_autocmd("FileType", {
-                pattern = { "c", "cpp" },
+                pattern = { "c" },
                 callback = function(args)
                     local bufnr = args.buf
-                    vim.keymap.set("n", "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>",
-                        { desc = "Switch Source/Header", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>cs", "<cmd>ClangdSymbolInfo<cr>",
-                        { desc = "Symbol Info", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>ct", "<cmd>ClangdTypeHierarchy<cr>",
-                        { desc = "Type Hierarchy", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>cm", "<cmd>ClangdMemoryUsage<cr>",
-                        { desc = "Memory Usage", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>ca", "<cmd>ClangdAST<cr>", { desc = "AST", buffer = bufnr })
-                end,
-            })
-        end,
-    },
-
-    -- CMake support
-    {
-        "Civitasv/cmake-tools.nvim",
-        ft = { "c", "cpp", "cmake" },
-        dependencies = { "nvim-lua/plenary.nvim" },
-        config = function()
-            require("cmake-tools").setup({
-                cmake_command = "cmake",
-                cmake_regenerate_on_save = true,
-                cmake_generate_options = { "-DCMAKE_EXPORT_COMPILE_COMMANDS=1" },
-                cmake_build_options = {},
-                cmake_build_directory = "build/${variant:buildType}",
-                cmake_soft_link_compile_commands = true,
-                cmake_compile_commands_from_lsp = false,
-                cmake_kits_path = nil,
-                cmake_variants_message = {
-                    short = { show = true },
-                    long = { show = true, max_length = 40 },
-                },
-                cmake_dap_configuration = {
-                    name = "cpp",
-                    type = "codelldb",
-                    request = "launch",
-                    stopOnEntry = false,
-                    runInTerminal = true,
-                    console = "integratedTerminal",
-                },
-                cmake_executor = {
-                    name = "quickfix",
-                    opts = {},
-                    default_opts = {
-                        quickfix = {
-                            show = "always",
-                            position = "belowright",
-                            size = 10,
-                            encoding = "utf-8",
-                            auto_close_when_success = true,
-                        },
-                    },
-                },
-                cmake_runner = {
-                    name = "terminal",
-                    opts = {},
-                    default_opts = {
-                        quickfix = {
-                            show = "always",
-                            position = "belowright",
-                            size = 10,
-                            encoding = "utf-8",
-                            auto_close_when_success = true,
-                        },
-                        terminal = {
-                            name = "Main Terminal",
-                            prefix_name = "[CMakeTools]: ",
-                            split_direction = "horizontal",
-                            split_size = 11,
-                            single_terminal_per_instance = true,
-                            single_terminal_per_tab = true,
-                            keep_terminal_static_location = true,
-                            auto_resize = true,
-                            start_insert = false,
-                        },
-                    },
-                },
-                cmake_notifications = {
-                    runner = { enabled = true },
-                    executor = { enabled = true },
-                    spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
-                },
-            })
-
-            -- CMake keybindings
-            vim.api.nvim_create_autocmd("FileType", {
-                pattern = { "c", "cpp", "cmake" },
-                callback = function(args)
-                    local bufnr = args.buf
-                    vim.keymap.set("n", "<leader>cb", "<cmd>CMakeBuild<cr>", { desc = "CMake Build", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>cr", "<cmd>CMakeRun<cr>", { desc = "CMake Run", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>cd", "<cmd>CMakeDebug<cr>", { desc = "CMake Debug", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>cc", "<cmd>CMakeClean<cr>", { desc = "CMake Clean", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>cg", "<cmd>CMakeGenerate<cr>",
-                        { desc = "CMake Generate", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>cs", "<cmd>CMakeSettings<cr>",
-                        { desc = "CMake Settings", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>ct", "<cmd>CMakeSelectBuildType<cr>",
-                        { desc = "CMake Build Type", buffer = bufnr })
-                    vim.keymap.set("n", "<leader>ck", "<cmd>CMakeSelectKit<cr>", { desc = "CMake Kit", buffer = bufnr })
+                    vim.keymap.set("n", "<leader>ct", "<cmd>!make test || echo 'No test target'<cr>", { desc = "C Test", buffer = bufnr })
+                    vim.keymap.set("n", "<leader>cr", "<cmd>!make run || ./a.out<cr>", { desc = "C Run", buffer = bufnr })
+                    vim.keymap.set("n", "<leader>cb", "<cmd>!make || clang %<cr>", { desc = "C Build", buffer = bufnr })
+                    vim.keymap.set("n", "<leader>cf", "<cmd>!clang-format -i %<cr>", { desc = "C Format", buffer = bufnr })
                 end,
             })
         end,

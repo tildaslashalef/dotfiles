@@ -13,23 +13,13 @@ return {
                 -- ===================================================================
                 -- Plugin-specific groups are now defined in their respective plugin files
                 
-                { "<leader>h",     group = "help" },
-                { "<leader>u",     group = "ui/toggle" },
-                { "<leader>W",     group = "windows" },
-                { "<leader><tab>", group = "tabs" },
+                -- Simplified groups - removed excessive categories
 
                 -- ===================================================================
-                -- HELP INTEGRATION
+                -- HELP INTEGRATION (Simplified - use natural which-key)
                 -- ===================================================================
-                -- Which-key help commands
                 
                 { "<leader>?",  function() require("which-key").show({ global = true }) end, desc = "Show All Keybindings" },
-                { "<leader>hk", function() require("which-key").show({ global = true }) end, desc = "Show All Keybindings" },
-                { "<leader>he", function() require("which-key").show({ keys = "<leader>e", loop = true }) end, desc = "Explorer Help" },
-                { "<leader>hg", function() require("which-key").show({ keys = "<leader>g", loop = true }) end, desc = "Git Help" },
-                { "<leader>hs", function() require("which-key").show({ keys = "<leader>s", loop = true }) end, desc = "Search Help" },
-                { "<leader>hc", function() require("which-key").show({ keys = "<leader>c", loop = true }) end, desc = "Code Help" },
-                { "<leader>hf", function() require("which-key").show({ keys = "<leader>f", loop = true }) end, desc = "File Help" },
             },
         },
         keys = {

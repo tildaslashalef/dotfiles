@@ -64,11 +64,7 @@ map("n", "<C-Down>", "<cmd>resize -2<cr>", { desc = "Decrease window height" })
 map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window width" })
 map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Increase window width" })
 
--- Window operations
-map("n", "<leader>Ww", "<C-W>p", { desc = "Other window", remap = true })
-map("n", "<leader>Wd", "<C-W>c", { desc = "Delete window", remap = true })
-map("n", "<leader>W-", "<C-W>s", { desc = "Split window below", remap = true })
-map("n", "<leader>W|", "<C-W>v", { desc = "Split window right", remap = true })
+-- Window operations (Removed - use default <C-w> commands)
 
 -- ===================================================================
 -- MOVEMENT AND EDITING
@@ -82,15 +78,14 @@ map("i", "<A-k>", "<esc><cmd>m .-2<cr>==gi", { desc = "Move up" })
 map("v", "<A-j>", ":m '>+1<cr>gv=gv", { desc = "Move down" })
 map("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move up" })
 
--- Buffer navigation
-map("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Prev buffer" })
-map("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next buffer" })
-map("n", "[b", "<cmd>bprevious<cr>", { desc = "Prev buffer" })
-map("n", "]b", "<cmd>bnext<cr>", { desc = "Next buffer" })
+-- Buffer navigation moved to bufferline plugin config
 
 -- ===================================================================
 -- LEADER KEY OPERATIONS
 -- ===================================================================
+
+-- Plugin management
+vim.keymap.set("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy Plugin Manager" })
 
 -- File operations
 vim.keymap.set("n", "<leader>w", "<cmd>w<cr>", { desc = "Save", silent = true })
@@ -119,59 +114,14 @@ map("n", "<leader>ui", vim.show_pos, { desc = "Inspect Pos" })
 map("n", "<leader>K", "<cmd>norm! K<cr>", { desc = "Keywordprg" })
 
 -- ===================================================================
--- UI TOGGLES
+-- UI TOGGLES (Simplified - use :set commands when needed)
 -- ===================================================================
-
-map("n", "<leader>ub", function()
-    vim.o.background = vim.o.background == "dark" and "light" or "dark"
-end, { desc = "Toggle background" })
-
-map("n", "<leader>uc", function()
-    vim.o.conceallevel = vim.o.conceallevel > 0 and 0 or 2
-end, { desc = "Toggle conceal" })
-
-map("n", "<leader>uf", function()
-    vim.g.autoformat = not vim.g.autoformat
-    vim.notify("Autoformat " .. (vim.g.autoformat and "enabled" or "disabled"))
-end, { desc = "Toggle format on save" })
-
-map("n", "<leader>us", function()
-    vim.o.spell = not vim.o.spell
-end, { desc = "Toggle spelling" })
-
-map("n", "<leader>uw", function()
-    vim.o.wrap = not vim.o.wrap
-end, { desc = "Toggle word wrap" })
-
-map("n", "<leader>uL", function()
-    vim.o.relativenumber = not vim.o.relativenumber
-end, { desc = "Toggle relative line numbers" })
-
-map("n", "<leader>ul", function()
-    vim.o.number = not vim.o.number
-end, { desc = "Toggle line numbers" })
-
-map("n", "<leader>ud", function()
-    local enabled = vim.diagnostic.is_enabled()
-    if enabled then
-        vim.diagnostic.enable(false)
-        vim.notify("Diagnostics disabled", vim.log.levels.INFO)
-    else
-        vim.diagnostic.enable(true)
-        vim.notify("Diagnostics enabled", vim.log.levels.INFO)
-    end
-end, { desc = "Toggle diagnostics" })
+-- Removed excessive UI toggles - use vim commands like :set wrap, :set spell, etc.
 
 -- ===================================================================
--- TAB OPERATIONS
+-- TAB OPERATIONS (Removed - use buffers instead of tabs)
 -- ===================================================================
-
-map("n", "<leader><tab>l", "<cmd>tablast<cr>", { desc = "Last Tab" })
-map("n", "<leader><tab>f", "<cmd>tabfirst<cr>", { desc = "First Tab" })
-map("n", "<leader><tab><tab>", "<cmd>tabnew<cr>", { desc = "New Tab" })
-map("n", "<leader><tab>]", "<cmd>tabnext<cr>", { desc = "Next Tab" })
-map("n", "<leader><tab>d", "<cmd>tabclose<cr>", { desc = "Close Tab" })
-map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
+-- Use <S-h>/<S-l> for buffer navigation instead of tabs
 
 -- ===================================================================
 -- TERMINAL MODE MAPPINGS

@@ -20,30 +20,12 @@ return {
             },
         },
         keys = {
-            -- File operations
-            { "<leader>ff", "<cmd>Telescope find_files<cr>",                    desc = "Find Files" },
-            { "<leader>fr", "<cmd>Telescope oldfiles<cr>",                      desc = "Recent Files" },
-            { "<leader>fb", "<cmd>Telescope buffers<cr>",                       desc = "Buffers" },
-
-            -- Search operations (Enhanced search/replace shortcuts)
-            { "<leader>sg", "<cmd>Telescope live_grep<cr>",                     desc = "Live Grep" },
-            { "<leader>sf", "<cmd>Telescope current_buffer_fuzzy_find<cr>",     desc = "Search in File" },
-            { "<leader>sb", "<cmd>Telescope buffers<cr>",                       desc = "Search Buffers" },
-            { "<leader>sh", "<cmd>Telescope help_tags<cr>",                     desc = "Search Help" },
-            { "<leader>sk", "<cmd>Telescope keymaps<cr>",                       desc = "Search Keymaps" },
-            { "<leader>sc", "<cmd>Telescope colorscheme<cr>",                   desc = "Search Colorschemes" },
-            { "<leader>sj", "<cmd>Telescope jumplist<cr>",                      desc = "Search Jumplist" },
-            { "<leader>sm", "<cmd>Telescope marks<cr>",                         desc = "Search Marks" },
-
-            -- Git operations
-            { "<leader>gs", "<cmd>Telescope git_status<cr>",                    desc = "Git Status" },
-            { "<leader>gc", "<cmd>Telescope git_commits<cr>",                   desc = "Git Commits" },
-            { "<leader>gC", "<cmd>Telescope git_bcommits<cr>",                  desc = "Git Buffer Commits" },
-            { "<leader>gb", "<cmd>Telescope git_branches<cr>",                  desc = "Git Branches" },
-            { "<leader>gf", "<cmd>Telescope git_files<cr>",                     desc = "Git Files" },
-
-
-            -- Enhanced search word under cursor
+            -- Essential shortcuts only
+            { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find Files" },
+            { "<leader>sg", "<cmd>Telescope live_grep<cr>", desc = "Search Project" },
+            { "<leader>sf", "<cmd>Telescope current_buffer_fuzzy_find<cr>", desc = "Search in File" },
+            { "<leader>gs", "<cmd>Telescope git_status<cr>", desc = "Git Status" },
+            { "<leader>gf", "<cmd>Telescope git_files<cr>", desc = "Git Files" },
             {
                 "<leader>sw",
                 function()
@@ -160,14 +142,13 @@ return {
             local telescope = require("telescope")
             telescope.setup(opts)
             
-            -- Add which-key groups for Telescope operations
+            -- Add which-key groups for essential operations
             require("which-key").add({
-                { "<leader>f", group = "file/find" },
+                { "<leader>f", group = "files" },
                 { "<leader>s", group = "search" },
             })
             
-            -- File operations
-            vim.keymap.set("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New file" })
+            -- Removed extra file operations - use :enew or :e when needed
 
             -- Load extensions after setup with better error handling
             local function load_fzf_extension()
@@ -206,35 +187,8 @@ return {
         branch = "v3.x",
         cmd = "Neotree",
         keys = {
-            { "<leader>e", "<cmd>Neotree toggle position=right<cr>", desc = "Explorer NeoTree" },
-            { "<leader>E", "<cmd>Neotree focus position=right<cr>",  desc = "Focus NeoTree" },
-            -- Additional explorer operations
-            { "<leader>ee", function() vim.cmd("Neotree toggle") end, desc = "Toggle Explorer" },
-            { "<leader>ef", function() vim.cmd("Neotree focus filesystem") end, desc = "Focus Filesystem" },
-            { "<leader>eb", function() vim.cmd("Neotree buffers") end, desc = "Show Buffers" },
-            { "<leader>eg", function() vim.cmd("Neotree git_status") end, desc = "Git Status" },
-            { "<leader>es", function() vim.cmd("Neotree document_symbols") end, desc = "Document Symbols" },
-            { "<leader>ec", function() vim.cmd("Neotree close") end, desc = "Close Explorer" },
-            { "<leader>er", function() vim.cmd("Neotree reveal") end, desc = "Reveal Current File" },
-            { "<leader>eR", function() vim.cmd("Neotree refresh") end, desc = "Refresh Explorer" },
-            -- Explorer file operations
-            { "<leader>enf", function()
-                local input = vim.fn.input("New file name: ")
-                if input ~= "" then
-                    local current_dir = vim.fn.expand("%:p:h")
-                    local file_path = current_dir .. "/" .. input
-                    vim.cmd("edit " .. file_path)
-                end
-            end, desc = "New File" },
-            { "<leader>end", function()
-                local input = vim.fn.input("New directory name: ")
-                if input ~= "" then
-                    local current_dir = vim.fn.expand("%:p:h")
-                    local dir_path = current_dir .. "/" .. input
-                    vim.fn.mkdir(dir_path, "p")
-                    vim.notify("Created directory: " .. dir_path)
-                end
-            end, desc = "New Directory" },
+            -- Essential explorer shortcut only
+            { "<leader>e", "<cmd>Neotree toggle position=right<cr>", desc = "Explorer Toggle" },
         },
         deactivate = function()
             vim.cmd([[Neotree close]])
@@ -272,35 +226,24 @@ return {
                 width = 40,
                 mappings = {
                     ["<space>"] = "none",
+                    
+                    -- Essential daily operations only
+                    ["<cr>"] = "open",
+                    ["a"] = "add",           -- Create file
+                    ["A"] = "add_directory", -- Create directory  
+                    ["d"] = "delete",        -- Delete file/dir
+                    ["r"] = "rename",        -- Rename file/dir
+                    ["R"] = "refresh",       -- Refresh tree
+                    ["H"] = "toggle_hidden", -- Show/hide dotfiles
                     ["Y"] = {
                         function(state)
                             local node = state.tree:get_node()
                             local path = node:get_id()
                             vim.fn.setreg("+", path, "c")
                         end,
-                        desc = "Copy Path to Clipboard",
+                        desc = "Copy Path",
                     },
-                    ["O"] = {
-                        function(state)
-                            local path = state.tree:get_node().path
-                            local cmd
-                            if vim.fn.has("mac") == 1 then
-                                cmd = { "open", path }
-                            elseif vim.fn.has("unix") == 1 then
-                                cmd = { "xdg-open", path }
-                            else
-                                cmd = { "explorer", path }
-                            end
-                            vim.fn.jobstart(cmd, { detach = true })
-                        end,
-                        desc = "Open with System Application",
-                    },
-                    ["?"] = {
-                        function()
-                            require("which-key").show({ keys = "<leader>e", loop = true })
-                        end,
-                        desc = "Show Which-Key Help",
-                    },
+                    ["?"] = "show_help",
                 },
             },
             default_component_configs = {
@@ -356,10 +299,9 @@ return {
             })
             require("neo-tree").setup(opts)
             
-            -- Add which-key groups for Explorer operations
+            -- Explorer group simplified
             require("which-key").add({
                 { "<leader>e", group = "explorer" },
-                { "<leader>en", group = "new" },
             })
             
             vim.api.nvim_create_autocmd("TermClose", {
@@ -378,17 +320,11 @@ return {
         "akinsho/bufferline.nvim",
         event = "VeryLazy",
         keys = {
-            { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>",            desc = "Toggle pin" },
-            { "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete non-pinned buffers" },
-            { "<leader>bo", "<Cmd>BufferLineCloseOthers<CR>",          desc = "Delete other buffers" },
-            { "<leader>br", "<Cmd>BufferLineCloseRight<CR>",           desc = "Delete buffers to the right" },
-            { "<leader>bl", "<Cmd>BufferLineCloseLeft<CR>",            desc = "Delete buffers to the left" },
-            { "<leader>bb", "<cmd>e #<cr>",                            desc = "Switch to other buffer" },
-            { "<leader>`",  "<cmd>e #<cr>",                            desc = "Switch to other buffer" },
-            { "<S-h>",      "<cmd>BufferLineCyclePrev<cr>",            desc = "Prev buffer" },
-            { "<S-l>",      "<cmd>BufferLineCycleNext<cr>",            desc = "Next buffer" },
-            { "[b",         "<cmd>BufferLineCyclePrev<cr>",            desc = "Prev buffer" },
-            { "]b",         "<cmd>BufferLineCycleNext<cr>",            desc = "Next buffer" },
+            -- Essential buffer management shortcuts only
+            { "<leader>bb", "<cmd>e #<cr>",                   desc = "Switch to other buffer" },
+            { "<leader>bo", "<Cmd>BufferLineCloseOthers<CR>", desc = "Delete other buffers" },
+            { "<S-h>",      "<cmd>BufferLineCyclePrev<cr>",   desc = "Prev buffer" },
+            { "<S-l>",      "<cmd>BufferLineCycleNext<cr>",   desc = "Next buffer" },
         },
         opts = {
             options = {
@@ -726,15 +662,7 @@ return {
                 lsp_doc_border = false,
             },
         },
-        keys = {
-            { "<S-Enter>",   function() require("noice").redirect(vim.fn.getcmdline()) end,                 mode = "c",                 desc = "Redirect Cmdline" },
-            { "<leader>snl", function() require("noice").cmd("last") end,                                   desc = "Noice Last Message" },
-            { "<leader>snh", function() require("noice").cmd("history") end,                                desc = "Noice History" },
-            { "<leader>sna", function() require("noice").cmd("all") end,                                    desc = "Noice All" },
-            { "<leader>snd", function() require("noice").cmd("dismiss") end,                                desc = "Dismiss All" },
-            { "<c-f>",       function() if not require("noice.lsp").scroll(4) then return "<c-f>" end end,  silent = true,              expr = true,              desc = "Scroll forward",  mode = { "i", "n", "s" } },
-            { "<c-b>",       function() if not require("noice.lsp").scroll(-4) then return "<c-b>" end end, silent = true,              expr = true,              desc = "Scroll backward", mode = { "i", "n", "s" } },
-        },
+        -- Removed excess noice shortcuts - plugin works fine with defaults
     },
 
 

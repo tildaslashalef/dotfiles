@@ -37,7 +37,6 @@ yarn-error.log*
 *.sqlite
 *.sqlite3
 *.db
-*.sql
 
 # Package managers
 node_modules/

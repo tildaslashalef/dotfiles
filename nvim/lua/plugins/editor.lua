@@ -56,29 +56,20 @@ return {
             ensure_installed = {
                 "bash",
                 "c",
-                "cpp",
                 "diff",
                 "go",
                 "gomod",
                 "gowork",
                 "gosum",
-                "html",
-                "javascript",
-                "jsdoc",
                 "json",
-                "jsonc",
                 "lua",
                 "luadoc",
                 "luap",
                 "markdown",
                 "markdown_inline",
-                "python",
                 "query",
                 "regex",
-                "rust",
                 "toml",
-                "tsx",
-                "typescript",
                 "vim",
                 "vimdoc",
                 "yaml",
@@ -285,9 +276,8 @@ return {
         "akinsho/toggleterm.nvim",
         cmd = { "ToggleTerm", "TermExec" },
         keys = {
-            { "<leader>tt", "<cmd>ToggleTerm direction=horizontal<cr>",        desc = "Toggle horizontal terminal" },
-            { "<leader>tv", "<cmd>ToggleTerm direction=vertical size=80<cr>",  desc = "Toggle vertical terminal" },
-            { "<leader>tf", "<cmd>ToggleTerm direction=float<cr>",            desc = "Toggle floating terminal" },
+            -- Essential terminal shortcut only
+            { "<leader>tt", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Toggle Terminal" },
         },
         opts = {
             size = function(term)
@@ -340,23 +330,5 @@ return {
             vim.g.lazygit_floating_window_use_plenary = 0 -- use plenary.nvim to manage floating window if available
             vim.g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
         end,
-    },
-    -- Markdown Preview
-    {
-        "iamcco/markdown-preview.nvim",
-        cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-        ft = { "markdown" },
-        build = "cd app && npm install",
-        config = function()
-            vim.g.mkdp_auto_start = 0 -- Don't auto-start
-            vim.g.mkdp_browser = 'safari' -- Or 'firefox', 'brave', etc.
-            -- You might need to configure custom filetypes if you write standalone .mmd files
-            -- vim.g.mkdp_filetypes = {'markdown', 'mmd', 'mermaid'}
-            end,
-            keys = {
-            { '<leader>mp', '<cmd>MarkdownPreview<cr>', desc = 'Start Markdown Preview' },
-            { '<leader>ms', '<cmd>MarkdownPreviewStop<cr>', desc = 'Stop Markdown Preview' },
-            { '<leader>mt', '<cmd>MarkdownPreviewToggle<cr>', desc = 'Toggle Markdown Preview' },
-            },
     }
 }

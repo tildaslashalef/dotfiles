@@ -398,15 +398,7 @@ map <C-k> <C-W>k
 map <C-h> <C-W>h
 map <C-l> <C-W>l
 
-" Close the current buffer
-map <leader>bd :Bclose<cr>:tabclose<cr>gT
-
-" Close all the buffers
-map <leader>ba :bufdo bd<cr>
-
-" Navigate between buffers
-map <leader>l :bnext<cr>
-map <leader>h :bprevious<cr>
+" Buffer management moved to neovim config - keeping vimrc clean
 
 " Useful mappings for managing tabs
 map <leader>tn :tabnew<cr>
@@ -652,10 +644,9 @@ map <leader>s? z=
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 
 " Quickly open a buffer for scribble
-map <leader>b :e ~/buffer<cr>
-
-" Quickly open a markdown buffer for scribble
-map <leader>x :e ~/buffer.md<cr>
+" Buffer shortcuts moved to neovim config - keeping vimrc clean  
+" map <leader>b :e ~/buffer<cr>
+" map <leader>x :e ~/buffer.md<cr>
 
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>

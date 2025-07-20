@@ -107,9 +107,4 @@ require("lazy").setup({
             },
         },
     },
-    -- Custom keymaps for Lazy interface
-    keys = {
-        -- Use comma leader for Lazy interface too
-        { "<leader>l", "<cmd>Lazy<cr>", desc = "Lazy" },
-    },
 })

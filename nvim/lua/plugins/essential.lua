@@ -243,19 +243,9 @@ return {
                     vim.keymap.set(mode, l, r, { buffer = buffer, desc = desc })
                 end
 
-                -- stylua: ignore start
+                -- Essential git hunks only (simplified from 12 shortcuts)
                 map("n", "]h", gs.next_hunk, "Next Hunk")
                 map("n", "[h", gs.prev_hunk, "Prev Hunk")
-                map({ "n", "v" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
-                map({ "n", "v" }, "<leader>ghr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
-                map("n", "<leader>ghS", gs.stage_buffer, "Stage Buffer")
-                map("n", "<leader>ghu", gs.undo_stage_hunk, "Undo Stage Hunk")
-                map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
-                map("n", "<leader>ghp", gs.preview_hunk_inline, "Preview Hunk Inline")
-                map("n", "<leader>ghb", function() gs.blame_line({ full = true }) end, "Blame Line")
-                map("n", "<leader>ghd", gs.diffthis, "Diff This")
-                map("n", "<leader>ghD", function() gs.diffthis("~") end, "Diff This ~")
-                map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
             end,
         },
         config = function(_, opts)
@@ -264,13 +254,7 @@ return {
             -- Add which-key groups for Git operations
             require("which-key").add({
                 { "<leader>g", group = "git" },
-                { "<leader>gh", group = "hunks" },
             })
-            
-            -- Additional git operations
-            vim.keymap.set("n", "<leader>gd", function() require("gitsigns").diffthis() end, { desc = "Git diff current file" })
-            vim.keymap.set("n", "<leader>gD", function() require("gitsigns").diffthis("~") end, { desc = "Git diff project" })
-            vim.keymap.set("n", "<leader>gb", function() require("gitsigns").blame_line({ full = true }) end, { desc = "Git blame current line" })
         end,
     },
 
@@ -296,55 +280,14 @@ return {
             },
         },
         keys = {
-            -- Trouble operations
-            { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
-            { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
-            { "<leader>xl", "<cmd>lopen<cr>", desc = "Location List" },
-            { "<leader>xq", "<cmd>copen<cr>", desc = "Quickfix List" },
-            { "<leader>xL", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
-            { "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
-            { "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols (Trouble)" },
-            { "<leader>xc", "<cmd>TroubleClose<cr>", desc = "Close Trouble Window" },
-            -- Navigation
-            { "[d", vim.diagnostic.goto_prev, desc = "Go to previous diagnostic message" },
-            { "]d", vim.diagnostic.goto_next, desc = "Go to next diagnostic message" },
-            { "<leader>xd", vim.diagnostic.setloclist, desc = "Open diagnostics list" },
-            {
-                "[q",
-                function()
-                    if require("trouble").is_open() then
-                        require("trouble").previous({ skip_groups = true, jump = true })
-                    else
-                        local ok, err = pcall(vim.cmd.cprev)
-                        if not ok then
-                            vim.notify(err, vim.log.levels.ERROR)
-                        end
-                    end
-                end,
-                desc = "Previous trouble/quickfix item",
-            },
-            {
-                "]q",
-                function()
-                    if require("trouble").is_open() then
-                        require("trouble").next({ skip_groups = true, jump = true })
-                    else
-                        local ok, err = pcall(vim.cmd.cnext)
-                        if not ok then
-                            vim.notify(err, vim.log.levels.ERROR)
-                        end
-                    end
-                end,
-                desc = "Next trouble/quickfix item",
-            },
+            -- Essential diagnostics only
+            { "[d", vim.diagnostic.goto_prev, desc = "Previous diagnostic" },
+            { "]d", vim.diagnostic.goto_next, desc = "Next diagnostic" },
         },
         config = function(_, opts)
             require("trouble").setup(opts)
             
-            -- Add which-key groups for Diagnostics/Quickfix operations
-            require("which-key").add({
-                { "<leader>x", group = "diagnostics/quickfix" },
-            })
+            -- Simplified diagnostics - no extra groups needed
         end,
     },
 }

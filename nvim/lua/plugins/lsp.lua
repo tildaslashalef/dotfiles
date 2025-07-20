@@ -9,26 +9,19 @@ return {
         build = ":MasonUpdate",
         opts = {
             ensure_installed = {
-                -- Language servers
+                -- Language servers (Go + Zig + C + Lua only)
                 "gopls",
-                "rust-analyzer",
                 "zls",
-                "typescript-language-server",
                 "clangd",
                 "lua-language-server",
 
                 -- Formatters
                 "gofumpt",
                 "goimports",
-                "rustfmt",
-                "prettier",
-                "prettierd",   
                 "clang-format",
                 "stylua",
 
                 -- Linters
-                "golangci-lint",
-                "eslint_d",
                 "luacheck",
             },
             ui = {
@@ -134,60 +127,6 @@ return {
                     },
                 },
 
-                -- Rust language server
-                rust_analyzer = {
-                    settings = {
-                        ["rust-analyzer"] = {
-                            imports = {
-                                granularity = {
-                                    group = "module",
-                                },
-                                prefix = "self",
-                            },
-                            cargo = {
-                                buildScripts = {
-                                    enable = true,
-                                },
-                            },
-                            procMacro = {
-                                enable = true
-                            },
-                            inlayHints = {
-                                bindingModeHints = {
-                                    enable = false,
-                                },
-                                chainingHints = {
-                                    enable = true,
-                                },
-                                closingBraceHints = {
-                                    enable = true,
-                                    minLines = 25,
-                                },
-                                closureReturnTypeHints = {
-                                    enable = "never",
-                                },
-                                lifetimeElisionHints = {
-                                    enable = "never",
-                                    useParameterNames = false,
-                                },
-                                maxLength = 25,
-                                parameterHints = {
-                                    enable = true,
-                                },
-                                reborrowHints = {
-                                    enable = "never",
-                                },
-                                renderColons = true,
-                                typeHints = {
-                                    enable = true,
-                                    hideClosureInitialization = false,
-                                    hideNamedConstructor = false,
-                                },
-                            },
-                        }
-                    }
-                },
-
                 -- Zig language server
                 zls = {
                     settings = {
@@ -203,41 +142,10 @@ return {
                     }
                 },
 
-                -- TypeScript language server (stable, production-ready)
-                ts_ls = {
-                    settings = {
-                        typescript = {
-                            inlayHints = {
-                                includeInlayParameterNameHints = "literal",
-                                includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-                                includeInlayFunctionParameterTypeHints = true,
-                                includeInlayVariableTypeHints = false,
-                                includeInlayPropertyDeclarationTypeHints = true,
-                                includeInlayFunctionLikeReturnTypeHints = true,
-                                includeInlayEnumMemberValueHints = true,
-                            },
-                        },
-                        javascript = {
-                            inlayHints = {
-                                includeInlayParameterNameHints = "all",
-                                includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-                                includeInlayFunctionParameterTypeHints = true,
-                                includeInlayVariableTypeHints = true,
-                                includeInlayPropertyDeclarationTypeHints = true,
-                                includeInlayFunctionLikeReturnTypeHints = true,
-                                includeInlayEnumMemberValueHints = true,
-                            },
-                        },
-                        completions = {
-                            completeFunctionCalls = true,
-                        },
-                    },
-                },
-
-                -- C/C++ language server
+                -- C language server
                 clangd = {
                     keys = {
-                        { "<leader>cR", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
+                        { "<leader>cR", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C)" },
                     },
                     root_dir = function(fname)
                         return require("lspconfig.util").root_pattern(
@@ -335,22 +243,7 @@ return {
                 },
             },
             -- Additional server setup functions
-            setup = {
-                -- TypeScript setup - using stable typescript-language-server
-                ts_ls = function(_, opts)
-                    -- Standard ts_ls setup - rock solid and reliable
-                    return false -- Use standard LSP setup
-                end,
-                vtsls = function(_, opts)
-                    -- Only setup if typescript-tools is not available
-                    local has_typescript_tools = pcall(require, "typescript-tools")
-                    if has_typescript_tools then
-                        return true -- Skip setup, typescript-tools handles it
-                    end
-                    -- If typescript-tools not available, use standard setup
-                    return false
-                end,
-            },
+            setup = {},
         },
         config = function(_, opts)
             -- Safe utility function loading
@@ -511,18 +404,8 @@ return {
         opts = {
             formatters_by_ft = {
                 go = { "goimports", "gofumpt" },
-                rust = { "rustfmt" },
                 zig = { "zigfmt" },
-                javascript = { "prettierd", "prettier", stop_after_first = true },
-                typescript = { "prettierd", "prettier", stop_after_first = true },
-                javascriptreact = { "prettierd", "prettier", stop_after_first = true },
-                typescriptreact = { "prettierd", "prettier", stop_after_first = true },
-                json = { "prettierd", "prettier", stop_after_first = true },
-                html = { "prettierd", "prettier", stop_after_first = true },
-                css = { "prettierd", "prettier", stop_after_first = true },
-                markdown = { "prettierd", "prettier", stop_after_first = true },
                 c = { "clang-format" },
-                cpp = { "clang-format" },
                 lua = { "stylua" },
             },
             format_on_save = {
@@ -548,11 +431,7 @@ return {
             local lint = require("lint")
 
             lint.linters_by_ft = {
-                -- go = { "golangcilint" }, -- Disabled: too noisy with style suggestions
-                javascript = { "eslint_d" },
-                typescript = { "eslint_d" },
-                javascriptreact = { "eslint_d" },
-                typescriptreact = { "eslint_d" },
+                -- Only essential linting for our supported languages
                 lua = { "luacheck" },
             }
 
