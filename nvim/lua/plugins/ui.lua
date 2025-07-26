@@ -469,65 +469,6 @@ return {
                                 end
                             end,
                         },
-                        {
-                            function()
-                                local ok, copilot_api = pcall(require, "copilot.api")
-                                local ok_client, copilot_client = pcall(require, "copilot.client")
-                                
-                                if not ok or not ok_client then
-                                    return ""
-                                end
-
-                                -- Check if copilot is disabled first
-                                if copilot_client.is_disabled() then
-                                    return "󰚩" -- Disabled icon (crossed out or different)
-                                end
-
-                                local status = copilot_api.status.data
-                                if not status then
-                                    return "󰚩"
-                                end
-
-                                if status.status == "InProgress" then
-                                    return "󰚩"
-                                elseif status.status == "Warning" then
-                                    return "󰚩"
-                                elseif status.status == "Normal" then
-                                    return "󰘦"
-                                else
-                                    return "󰚩"
-                                end
-                            end,
-                            color = function()
-                                local ok, copilot_api = pcall(require, "copilot.api")
-                                local ok_client, copilot_client = pcall(require, "copilot.client")
-                                
-                                if not ok or not ok_client then
-                                    return { fg = "#6c7086" }
-                                end
-
-                                -- Check if copilot is disabled first
-                                if copilot_client.is_disabled() then
-                                    return { fg = "#f38ba8" } -- Red color for disabled
-                                end
-
-                                local status = copilot_api.status.data
-                                if not status then
-                                    return { fg = "#6c7086" }
-                                end
-
-                                if status.status == "InProgress" then
-                                    return { fg = "#f9e2af" }
-                                elseif status.status == "Warning" then
-                                    return { fg = "#fab387" }
-                                elseif status.status == "Normal" then
-                                    return { fg = "#a6e3a1" }
-                                else
-                                    return { fg = "#6c7086" }
-                                end
-                            end,
-                            padding = { left = 1, right = 1 },
-                        },
                     },
                     lualine_y = {
                         { "progress", separator = " ",                  padding = { left = 1, right = 0 } },
