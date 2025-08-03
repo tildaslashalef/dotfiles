@@ -19,7 +19,7 @@ window-save-state = always
 
 # Cursor
 mouse-hide-while-typing = true
-cursor-style = block
+cursor-style = bar
 cursor-style-blink = false
 
 ## Background
@@ -27,8 +27,8 @@ background-opacity = 0.95
 
 # Window
 window-theme = dark
-window-width = 200
-window-height = 54
+window-width = 225
+window-height = 51
 # window-padding-x = 15
 # window-padding-y = 15
 window-decoration = true
@@ -43,6 +43,7 @@ copy-on-select = clipboard
 
 # Shell
 shell-integration = fish
+shell-integration-features = no-cursor
 
 
 ## keymaps

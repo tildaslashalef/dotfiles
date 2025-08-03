@@ -18,7 +18,15 @@ end
 
 # Shell behavior
 set fish_greeting ""                 # Don't show greeting
-fish_vi_key_bindings 
+fish_vi_key_bindings
+
+# Cursor configuration for Ghostty
+# Force all cursor modes to use block cursor without blinking
+# set fish_cursor_default block
+# set fish_cursor_insert block
+# set fish_cursor_replace_one block
+# set fish_cursor_visual block
+# set fish_cursor_unknown block 
 
 set -g fish_history fish
 set -gx HISTSIZE 10000
